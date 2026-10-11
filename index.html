@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hauskredit</title>
+<meta name="theme-color" content="#1F5C45">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hauskredit">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Hauskredit-Rechner: Sondertilgungen planen und Restschuld dokumentieren – offline, Daten bleiben auf dem Gerät.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Serif";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-serif-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Serif";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-serif-latin-600-normal.woff2) format("woff2")}
+</style>
+<style>
+:root{
+  --bg:#F2F4F2; --surface:#FFFFFF; --ink:#18231E; --muted:#5B6B63; --line:#D5DCD8;
+  --accent:#1F5C45; --accent-ink:#FFFFFF; --accent-soft:#E1ECE6;
+  --gold:#A87B12; --gold-soft:#F6EBCF; --danger:#A3362B; --danger-soft:#F7E2DF;
+  --base-line:#9AA8A1; --c3:#6B5CA5;
+  --sans:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --serif:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1A221E; --ink:#E3EAE6; --muted:#93A39B; --line:#2C3833;
+    --accent:#7CC3A0; --accent-ink:#0F1A15; --accent-soft:#1F3229;
+    --gold:#E2B84E; --gold-soft:#3A3020; --danger:#E07A6E; --danger-soft:#3A221F;
+    --base-line:#5D6B64; --c3:#A99BE6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A221E; --ink:#E3EAE6; --muted:#93A39B; --line:#2C3833;
+  --accent:#7CC3A0; --accent-ink:#0F1A15; --accent-soft:#1F3229;
+  --gold:#E2B84E; --gold-soft:#3A3020; --danger:#E07A6E; --danger-soft:#3A221F;
+  --base-line:#5D6B64; --c3:#A99BE6;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{overflow-x:clip;margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.num,td,th,.fig{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.25}
+h2{font-size:1.35rem}
+h3{font-size:1.05rem}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+a{color:var(--accent)}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:14px;padding-bottom:10px}
+.brand h1{font-family:var(--serif);font-size:1.3rem}
+.tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;overflow-x:auto;max-width:100%}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--muted);font:500 .9rem var(--sans);padding:7px 13px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main{padding-top:28px;padding-bottom:64px}
+section[hidden]{display:none}
+
+/* hero */
+.hero{display:grid;gap:22px;margin-bottom:34px}
+.hero-figure{font-family:var(--serif);font-size:clamp(2.4rem,7vw,3.6rem);font-weight:600;letter-spacing:-.01em;line-height:1.05}
+.hero-sub{margin-top:6px}
+.timeline{position:relative;padding:34px 0 30px}
+.tl-track{height:14px;border-radius:7px;background:var(--accent-soft);position:relative;overflow:hidden}
+.tl-paid{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.tl-fixband{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,transparent 0 5px,color-mix(in srgb,var(--gold) 35%,transparent) 5px 7px)}
+.tl-mark{position:absolute;top:22px;bottom:18px;width:2px;background:var(--ink)}
+.tl-mark.gold{background:var(--gold)}
+.tl-mark span{position:absolute;bottom:100%;transform:translateX(-50%);font-size:.78rem;white-space:nowrap;color:var(--ink);padding-bottom:2px}
+.tl-mark.gold span{top:100%;bottom:auto;padding-top:4px;color:var(--gold)}
+.tl-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:6px}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 28px;margin:0}
+.facts div{padding:12px 0;border-top:1px solid var(--line)}
+.facts dt{font-size:.85rem;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-size:1.12rem;font-weight:500}
+.facts dd small{display:block;font-size:.82rem;font-weight:400;color:var(--muted)}
+
+.note{border-left:3px solid var(--gold);background:var(--gold-soft);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.92rem;margin:18px 0}
+.note.err{border-color:var(--danger);background:var(--danger-soft)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+.stack>*+*{margin-top:22px}
+.split{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:28px;align-items:start}
+.split>*{min-width:0}
+@media (max-width:860px){.split{grid-template-columns:minmax(0,1fr);gap:20px}}
+
+/* forms */
+label{display:block;font-size:.88rem;font-weight:500;margin-bottom:5px}
+.hint{font-size:.8rem;color:var(--muted);margin-top:4px;font-weight:400}
+input[type=text],input[type=month],input[type=date],select,textarea{width:100%;font:400 1rem var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-height:42px}
+textarea{min-height:80px;resize:vertical}
+input::placeholder{color:var(--muted);opacity:.7}
+.field{margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media (max-width:520px){.grid2{grid-template-columns:1fr}}
+fieldset{border:0;padding:0;margin:0 0 18px}
+legend{font-size:.88rem;font-weight:500;margin-bottom:8px;padding:0}
+.choices{display:flex;flex-direction:column;gap:6px}
+.choice{display:flex;gap:9px;align-items:flex-start;font-weight:400;font-size:.95rem;margin:0;cursor:pointer}
+.choice input{margin-top:4px;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg label{flex:1;margin:0;text-align:center;padding:8px 6px;font-weight:500;font-size:.9rem;cursor:pointer;color:var(--muted)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--accent-soft);color:var(--ink)}
+.seg label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:-2px}
+.form-section{padding-top:18px;margin-top:4px;border-top:1px solid var(--line)}
+.form-section h3{margin-bottom:12px}
+
+.btn{appearance:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:500 .95rem var(--sans);padding:10px 16px;border-radius:9px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.link{border:0;background:none;color:var(--accent);padding:4px 6px;font-size:.85rem}
+.btn.link.danger{color:var(--danger)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* results */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:500;color:var(--muted);font-size:.82rem;vertical-align:bottom}
+tbody tr.st td{background:var(--gold-soft)}
+tbody tr.fixrow td{border-bottom:2px solid var(--gold)}
+td.good{color:var(--accent);font-weight:600}
+tfoot td{font-weight:600;border-bottom:0;border-top:2px solid var(--line)}
+.cmp td:first-child{white-space:normal;color:var(--muted)}
+.cmp th.scen{color:var(--ink)}
+.tall{max-height:460px;overflow:auto}
+.tall thead th{position:sticky;top:0;background:var(--surface);z-index:2}
+/* erste Spalte fixiert, Rest scrollt seitlich */
+.scroll table th:first-child,.scroll table td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:inset -1px 0 0 var(--line)}
+.scroll tbody tr.st td:first-child{background:var(--gold-soft)}
+.tall thead th:first-child{z-index:3}
+.cmp td:first-child{min-width:140px;max-width:210px}
+.scroll{border-radius:6px}
+.tag{display:inline-block;font-size:.74rem;font-weight:500;padding:1px 8px;border-radius:10px;background:var(--accent-soft);color:var(--ink)}
+.tag.lz{background:var(--gold-soft)}
+/* Sondertilgungs-Einträge */
+.st-entry{border:1px solid var(--line);border-radius:10px;padding:14px 14px 10px;margin-bottom:12px;background:var(--bg)}
+.st-entry-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+.st-entry-head strong{font-size:.92rem;display:flex;align-items:center;gap:8px}
+.st-entry-head .num-badge{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:.78rem}
+.st-entry .field{margin-bottom:12px}
+.st-entry input,.st-entry select{background:var(--surface)}
+.st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0 12px}
+.st-entry .fee{color:var(--ink);margin:-4px 0 4px}
+@media (max-width:600px){
+  .wrap{padding:0 14px}
+  main{padding-top:20px}
+  .panel{padding:16px;border-radius:10px}
+  .top .wrap{padding-top:10px;padding-bottom:8px;gap:8px}
+  .brand h1{font-size:1.15rem}
+  .tabs{width:100%}
+  .tabs button{flex:1 0 auto;padding:7px 8px;font-size:.84rem}
+  .hide-sm{display:none}
+  table{font-size:.85rem}
+  th,td{padding:7px 8px}
+  .facts{grid-template-columns:1fr 1fr;gap:0 16px}
+  .facts dd{font-size:1rem}
+  .cmp td:first-child{min-width:118px;max-width:150px}
+  h2{font-size:1.2rem}
+}
+details summary{cursor:pointer;font-weight:500;padding:6px 0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.chart svg{display:block;width:100%;height:auto}
+.empty{padding:40px 22px;text-align:center}
+.empty p{margin-bottom:14px}
+.result-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.pill{display:inline-block;font-size:.78rem;padding:2px 8px;border-radius:20px;background:var(--accent-soft);color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:9px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1 id="loanTitle">Hauskredit</h1>
+      <p id="saveState" class="muted small">Lädt …</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Bereiche">
+      <button role="tab" data-tab="overview" aria-selected="true">Übersicht</button>
+      <button role="tab" data-tab="special" aria-selected="false">Sondertilgung</button>
+      <button role="tab" data-tab="journal" aria-selected="false"><span class="hide-sm">Restschuld-</span>Journal</button>
+      <button role="tab" data-tab="setup" aria-selected="false">Kreditdaten</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Übersicht -->
+  <section id="tab-overview" role="tabpanel"></section>
+
+  <!-- Sondertilgung -->
+  <section id="tab-special" role="tabpanel" hidden>
+    <div class="split">
+      <form id="stForm" class="panel" novalidate>
+        <h2 style="margin-bottom:6px">Sondertilgungen planen</h2>
+        <p class="muted small" style="margin-bottom:16px">Kombiniere beliebig viele Sondertilgungen mit eigener Wirkung – z. B. drei Jahre lang viel tilgen und die Rate senken, danach weniger tilgen und die Laufzeit verkürzen.</p>
+        <div id="stEntries"></div>
+        <button type="button" class="btn ghost" id="addEntry" style="width:100%;margin-bottom:20px">+ Weitere Sondertilgung</button>
+        <fieldset>
+          <legend>Vergleich</legend>
+          <label class="choice"><input type="checkbox" id="cmpUniform">Zusätzlich zeigen, wie es mit einheitlicher Wirkung aussähe (alles „Rate senken“ bzw. alles „Laufzeit verkürzen“)</label>
+        </fieldset>
+        <fieldset>
+          <legend>Was soll berechnet werden?</legend>
+          <div class="choices" id="outputChoices"></div>
+        </fieldset>
+        <button class="btn" type="submit" style="width:100%">Berechnen</button>
+      </form>
+      <div id="stResult"></div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section id="tab-journal" role="tabpanel" hidden>
+    <div class="split">
+      <form id="jForm" class="panel" novalidate>
+        <h2 style="margin-bottom:6px">Restschuld eintragen</h2>
+        <p class="muted small" style="margin-bottom:16px">Laut Kontoauszug, nach der Rate des Monats. Ein zweiter Eintrag für denselben Monat ersetzt den ersten.</p>
+        <div class="field">
+          <label for="jMonth">Monat</label>
+          <input id="jMonth" type="month">
+        </div>
+        <div class="field">
+          <label for="jAmount">Restschuld</label>
+          <input id="jAmount" type="text" inputmode="decimal" placeholder="z. B. 287.412,55">
+        </div>
+        <div class="field">
+          <label for="jZins">Zinssatz in diesem Monat (% p. a.)</label>
+          <input id="jZins" type="text" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="jTilgung">Getilgt über die Monatsrate</label>
+          <input id="jTilgung" type="text" inputmode="decimal" placeholder="Tilgungsanteil laut Auszug">
+          <p class="hint">Fehlt der Wert? <button type="button" class="btn link" id="jDerive" style="padding:0">Aus Restschuld-Differenz ableiten</button></p>
+        </div>
+        <div class="field">
+          <label for="jSt">Sondertilgung</label>
+          <input id="jSt" type="text" inputmode="decimal" placeholder="0">
+          <p class="hint">Geht ohne Zinsanteil voll in die Tilgung.</p>
+        </div>
+        <div class="field">
+          <label for="jStDate">Datum der Sondertilgung</label>
+          <input id="jStDate" type="date">
+          <p class="hint">Zählt für den gebührenfreien Rahmen. Ohne Datum gilt das Monatsende.</p>
+        </div>
+        <div class="field">
+          <label for="jNote">Notiz <span class="muted">(optional)</span></label>
+          <input id="jNote" type="text" placeholder="z. B. inkl. Sondertilgung 5.000 €">
+        </div>
+        <button class="btn" type="submit" style="width:100%">Eintrag speichern</button>
+      </form>
+      <div id="jList" class="stack"></div>
+    </div>
+  </section>
+
+  <!-- Setup -->
+  <section id="tab-setup" role="tabpanel" hidden>
+    <form id="setupForm" class="panel" novalidate style="max-width:720px">
+      <div class="result-head" style="margin-bottom:6px">
+        <h2>Kreditdaten</h2>
+        <button type="button" class="btn link" id="fillExample">Beispielwerte einsetzen</button>
+      </div>
+      <p class="muted small" style="margin-bottom:20px">Alle Berechnungen starten bei der Restschuld zum angegebenen Stand. Pflichtfelder sind mit * markiert.</p>
+
+      <div class="field"><label for="f_name">Bezeichnung</label><input id="f_name" type="text" placeholder="z. B. Wohnbaukredit Erste Bank"></div>
+      <div class="grid2">
+        <div class="field"><label for="f_betrag">Ursprünglicher Kreditbetrag</label><input id="f_betrag" type="text" inputmode="decimal"></div>
+        <div class="field"><label for="f_beginn">Erste Rate (Beginn)</label><input id="f_beginn" type="month"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="f_ende">Letzte Rate laut Vertrag *</label><input id="f_ende" type="month"></div>
+        <div class="field"><label for="f_rate">Derzeitige Monatsrate *</label><input id="f_rate" type="text" inputmode="decimal"></div>
+      </div>
+
+      <div class="form-section">
+        <h3>Aktueller Stand</h3>
+        <div class="grid2">
+          <div class="field"><label for="f_rest">Restschuld *</label><input id="f_rest" type="text" inputmode="decimal"></div>
+          <div class="field"><label for="f_restMonat">nach der Rate im Monat *</label><input id="f_restMonat" type="month"><p class="hint">Neuester Journaleintrag lässt sich auch direkt übernehmen.</p></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Zinsen</h3>
+        <div class="grid2">
+          <div class="field"><label for="f_zinsFix">Zinssatz derzeit (% p. a.) *</label><input id="f_zinsFix" type="text" inputmode="decimal"></div>
+          <div class="field"><label for="f_fixEnde">Fixzins bis einschließlich</label><input id="f_fixEnde" type="month"><p class="hint">Leer lassen, wenn der Zins bis zum Ende fix ist.</p></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="f_zinsVar">Erwarteter Durchschnittszins danach (% p. a.)</label><input id="f_zinsVar" type="text" inputmode="decimal"></div>
+          <div class="field" style="padding-top:26px"><label class="choice"><input id="f_neuNachFix" type="checkbox" checked>Rate wird nach Fixzinsende neu berechnet</label></div>
+        </div>
+        <div class="field"><label for="f_zinsMethode">Zinsberechnung der Bank</label>
+          <select id="f_zinsMethode">
+            <option value="30/360">30/360 – Zinssatz ÷ 12 pro Monat</option>
+            <option value="act/360">act/360 – taggenau, Jahr mit 360 Tagen</option>
+            <option value="act/365">act/365 – taggenau, Jahr mit 365 Tagen</option>
+          </select>
+          <p class="hint">Steht im Kreditvertrag meist unter „Zinsberechnung“ bzw. „Zinsenmethode“. Passt das berechnete Laufzeitende nicht zum Vertrag, schlägt die Übersicht eine passende Methode vor.</p>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Sondertilgung laut Vertrag</h3>
+        <fieldset>
+          <legend>Eine Sondertilgung …</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="f_wirkung" value="rate" checked>verringert die Monatsrate (Laufzeit bleibt)</label>
+            <label class="choice"><input type="radio" name="f_wirkung" value="laufzeit">verkürzt die Laufzeit (Rate bleibt)</label>
+          </div>
+        </fieldset>
+        <div class="grid2">
+          <div class="field"><label for="f_gebuehr">Gebühr (% vom Betrag über dem Freibetrag)</label><input id="f_gebuehr" type="text" inputmode="decimal" placeholder="0"></div>
+          <div class="field"><label for="f_freibetrag">Gebührenfrei bis (Freibetrag in €)</label><input id="f_freibetrag" type="text" inputmode="decimal" placeholder="leer = Gebühr auf den ganzen Betrag"></div>
+          <div class="field"><label for="f_freiZeitraum">Freibetrag gilt</label><select id="f_freiZeitraum"><option value="rolling">innerhalb von 365 Tagen</option><option value="calendar">pro Kalenderjahr</option></select><p class="hint">Sondertilgungen aus dem Journal werden angerechnet.</p></div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="field"><label for="f_notiz">Notizen</label><textarea id="f_notiz" placeholder="z. B. Kontonummer, Ansprechperson, Sondertilgung kostenfrei bis 10 % pro Jahr …"></textarea></div>
+      </div>
+      <p id="setupError" class="note err" hidden></p>
+      <div class="btn-row"><button class="btn" type="submit">Kreditdaten speichern</button></div>
+    </form>
+    <div class="panel" style="max-width:720px;margin-top:22px">
+      <h2 style="margin-bottom:6px">Sicherung</h2>
+      <p class="muted small" style="margin-bottom:14px">Deine Daten liegen nur in diesem Browser auf diesem Gerät. Lade ab und zu eine Sicherung herunter – damit kannst du sie auch auf ein anderes Gerät oder in die installierte App übertragen.</p>
+      <div class="btn-row">
+        <button class="btn" type="button" id="exportBtn">Sicherung herunterladen</button>
+        <button class="btn ghost" type="button" id="importBtn">Sicherung laden</button>
+        <button class="btn ghost" type="button" id="csvBtn">Journal als CSV</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+      <p class="muted small" style="margin-top:16px" id="appInfo">Version 1.0.0</p>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+"use strict";
+const LS_KEY = "hauskredit-v1";
+const OUTPUTS = [
+  ["rate", "Neue Monatsrate"],
+  ["end", "Neue Laufzeit und Enddatum"],
+  ["savings", "Zinsersparnis"],
+  ["fee", "Sondertilgungsgebühr"],
+  ["fix", "Stand zum Fixzinsende"],
+  ["chart", "Restschuld-Verlauf als Grafik"],
+  ["years", "Entwicklung nach jeder Sondertilgung"],
+  ["plan", "Monatlicher Tilgungsplan"]
+];
+const DEFAULT_OUT = {rate:true,end:true,savings:true,fee:true,fix:true,chart:true,years:true,plan:false};
+let S = {params:null, journal:[], outputs:{...DEFAULT_OUT}, plan:[], cmpUniform:false};
+let lastCalc = null;
+
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- formatting ---------- */
+const eurF = new Intl.NumberFormat("de-AT",{style:"currency",currency:"EUR"});
+const eur = v => eurF.format(v);
+const eur0 = v => new Intl.NumberFormat("de-AT",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(v);
+const pct = v => v.toLocaleString("de-AT",{maximumFractionDigits:3}) + " %";
+const ymToIdx = s => { if(!s) return null; const [y,m] = s.split("-").map(Number); return y*12 + m - 1; };
+const idxToYm = i => `${Math.floor(i/12)}-${String(i%12+1).padStart(2,"0")}`;
+const fmtM = i => new Date(Math.floor(i/12), i%12, 1).toLocaleDateString("de-AT",{month:"long",year:"numeric"});
+const fmtMs = i => new Date(Math.floor(i/12), i%12, 1).toLocaleDateString("de-AT",{month:"short",year:"numeric"});
+const fmtDate = d => d.toLocaleDateString("de-AT",{day:"numeric",month:"long",year:"numeric"});
+const daysIn = i => new Date(Math.floor(i/12), i%12 + 1, 0).getDate();
+const now = new Date();
+const curIdx = now.getFullYear()*12 + now.getMonth();
+function dur(n){
+  if(!isFinite(n)) return "–";
+  const neg = n < 0; n = Math.abs(n);
+  const y = Math.floor(n/12), m = n % 12, p = [];
+  if(y) p.push(y + (y===1?" Jahr":" Jahre"));
+  if(m || !y) p.push(m + (m===1?" Monat":" Monate"));
+  return (neg?"−":"") + p.join(", ");
+}
+function parseNum(s){
+  if(s == null) return NaN;
+  s = String(s).trim().replace(/[\s€%]/g,"");
+  if(!s) return NaN;
+  if(s.includes(",")) s = s.replace(/\./g,"").replace(",",".");
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,"");
+  return Number(s);
+}
+const numStr = v => (v==null || isNaN(v)) ? "" : v.toLocaleString("de-AT",{maximumFractionDigits:4});
+
+/* ---------- finance ---------- */
+function annuity(P, r, n){ if(n <= 0) return P; if(r === 0) return P/n; return P*r/(1-Math.pow(1+r,-n)); }
+function nper(P, r, A){ if(r === 0) return P/A; if(A <= P*r) return Infinity; return -Math.log(1 - P*r/A)/Math.log(1+r); }
+
+function rateFns(p){
+  const meth = p.zinsMethode || "30/360";
+  const basis = meth === "act/365" ? 365 : 360;
+  return {
+    month: (annual, m) => meth === "30/360" ? annual/1200 : annual/100 * daysIn(m) / basis,
+    avg: annual => meth === "30/360" ? annual/1200 : annual/100 * 365.25 / basis / 12
+  };
+}
+function simulate(p, specials, override){
+  const anchor = ymToIdx(p.restMonat), end = ymToIdx(p.ende);
+  const fix = p.fixEnde ? ymToIdx(p.fixEnde) : Infinity;
+  const zVar = (p.zinsVar == null || isNaN(p.zinsVar)) ? p.zinsFix : p.zinsVar;
+  const annualFor = m => m <= fix ? p.zinsFix : zVar;
+  const R = rateFns(p);
+  const byM = new Map();
+  for(const s of specials){ if(!byM.has(s.idx)) byM.set(s.idx, []); byM.get(s.idx).push(s); }
+  let bal = p.rest, rate = p.rate, totalInt = 0, totalSt = 0;
+  const rows = [], applied = [];
+  let m = anchor + 1;
+  const limit = Math.max(end, anchor) + 720;
+  while(bal > 0.005 && m <= limit){
+    const annual = annualFor(m), r = R.month(annual, m);
+    if(p.neuNachFix && fix !== Infinity && m === fix + 1){
+      // Restlaufzeit, die sich aus der tatsächlichen Rate ergibt, bleibt erhalten
+      let n = nper(bal, R.avg(p.zinsFix), rate);
+      if(!isFinite(n) || n <= 0) n = Math.max(1, end - m + 1);
+      rate = annuity(bal, R.avg(annual), n);
+    }
+    const sts = (byM.get(m) || []).slice().sort((a,b) => a.day - b.day);
+    const dim = daysIn(m);
+    let b = bal, interest = 0, from = 0, stSum = 0, anyRate = false;
+    for(const s of sts){
+      const at = (s.day - 1) / dim;
+      interest += b * r * (at - from); from = at;
+      const amt = Math.min(s.amount, b);
+      if(amt > 0){
+        const mode = override || s.mode || "rate";
+        b -= amt; stSum += amt; if(mode === "rate") anyRate = true;
+        applied.push({idx:m, day:s.day, amount:amt, mode});
+      }
+    }
+    interest += b * r * (1 - from);
+    const pay = Math.min(rate, b + interest);
+    b = b + interest - pay;
+    if(b < 0.005) b = 0;
+    totalInt += interest; totalSt += stSum;
+    rows.push({m, zins:annual, rate:pay, interest, tilgung:pay - interest, st:stSum, bal:b});
+    if(anyRate && b > 0){
+      // Rate sinkt im selben Verhältnis wie die Restschuld (gleiche Restlaufzeit)
+      const intNo = bal * r, balNo = bal + intNo - Math.min(rate, bal + intNo);
+      if(balNo > 0) rate = rate * b / balNo;
+    }
+    bal = b; m++;
+  }
+  return {rows, applied, totalInt, totalSt, lastIdx: rows.length ? rows[rows.length-1].m : anchor, paidOff: bal <= 0.005};
+}
+const rowAt = (sim, idx) => sim.rows.find(r => r.m === idx);
+const has = v => v != null && !isNaN(v);
+
+/* ---------- Sondertilgungsgebühr ---------- */
+const DAY = 86400000;
+function hasFee(p){ return !!p && p.gebuehr > 0; }
+function feeRuleText(p){
+  return `Gebühr ${pct(p.gebuehr)}` + (p.freibetrag != null ? ` auf den Teil über ${eur0(p.freibetrag)} ${p.freiZeitraum === "calendar" ? "pro Kalenderjahr" : "innerhalb von 365 Tagen"}` : "");
+}
+function journalSpecials(){
+  return S.journal.filter(j => j.st > 0).map(j => {
+    let d = j.stDate ? new Date(j.stDate + "T12:00:00") : null;
+    if(!d || isNaN(d)){ const i = ymToIdx(j.ym); d = new Date(Math.floor(i/12), i%12 + 1, 0, 12); }
+    return {date:d, amount:j.st};
+  });
+}
+function usedBefore(p, items, d){
+  return items.filter(x => p.freiZeitraum === "calendar"
+      ? x.date.getFullYear() === d.getFullYear() && x.date <= d
+      : (d - x.date) >= 0 && (d - x.date) / DAY < 365)
+    .reduce((s, x) => s + x.amount, 0);
+}
+function freeLeft(p, d){ return p.freibetrag == null ? 0 : Math.max(0, p.freibetrag - usedBefore(p, journalSpecials(), d)); }
+function plannedFees(p, planned){
+  const hist = journalSpecials(), done = [], free = p.freibetrag == null ? 0 : p.freibetrag;
+  return planned.map(x => {
+    const used = usedBefore(p, [...hist, ...done], x.date);
+    const excess = Math.max(0, used + x.amount - free) - Math.max(0, used - free);
+    done.push(x);
+    return {free:x.amount - excess, excess, fee: hasFee(p) ? excess * p.gebuehr / 100 : 0};
+  });
+}
+function feeStatusHtml(){
+  const p = S.params; if(!hasFee(p) || p.freibetrag == null) return "";
+  const used = usedBefore(p, journalSpecials(), new Date());
+  return `<p class="note">${p.freiZeitraum === "calendar" ? "In diesem Kalenderjahr" : "In den letzten 365 Tagen"} sondergetilgt: ${eur(used)} – heute noch gebührenfrei: ${eur(Math.max(0, p.freibetrag - used))}.</p>`;
+}
+
+/* ---------- storage ---------- */
+function loadLocal(){
+  try{ const raw = localStorage.getItem(LS_KEY); if(raw){ const d = JSON.parse(raw); if(d && typeof d === "object") applyData(d); } }catch(e){}
+}
+function applyData(d){
+  S.params = d.params || null;
+  S.journal = Array.isArray(d.journal) ? d.journal : [];
+  S.outputs = {...DEFAULT_OUT, ...(d.outputs || {})};
+  S.plan = Array.isArray(d.plan) ? d.plan : [];
+  S.cmpUniform = !!d.cmpUniform;
+}
+function snapshot(){ return {params:S.params, journal:S.journal, outputs:S.outputs, plan:S.plan, cmpUniform:S.cmpUniform, updated:new Date().toISOString()}; }
+function save(){
+  const data = snapshot();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){}
+  setSaveState();
+}
+function setSaveState(){
+  const el = $("#saveState");
+  if(!S.params){ el.textContent = "Noch keine Kreditdaten"; return; }
+  el.textContent = "Gespeichert auf diesem Gerät";
+}
+/* ---------- UI helpers ---------- */
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
+function showTab(name){
+  $$(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"));
+  $$("main > section").forEach(s => s.hidden = s.id !== "tab-" + name);
+  if(name === "setup") fillSetup();
+  window.scrollTo({top:0});
+}
+$$(".tabs button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+document.addEventListener("click", e => { const t = e.target.closest("[data-goto]"); if(t){ e.preventDefault(); showTab(t.dataset.goto); } });
+
+function emptyState(text){
+  return `<div class="panel empty"><p>${text}</p><button class="btn" data-goto="setup">Kreditdaten eintragen</button></div>`;
+}
+function contractMode(){ return S.params?.wirkung === "laufzeit" ? "laufzeit" : "rate"; }
+const modeLabel = m => m === "laufzeit" ? "Laufzeit verkürzen" : "Rate senken";
+
+/* ---------- chart ---------- */
+function lineChart(series, opts = {}){
+  const W = 720, H = 260, L = 64, R = 14, T = 14, B = 30;
+  const all = series.flatMap(s => s.pts);
+  if(all.length < 2) return "";
+  const xMin = Math.min(...all.map(p => p.m)), xMax = Math.max(...all.map(p => p.m));
+  const yMax = Math.max(...all.map(p => p.v)) * 1.05 || 1;
+  const yMin = opts.yMin != null ? opts.yMin : 0;
+  const X = m => L + (W - L - R) * (xMax === xMin ? 0 : (m - xMin) / (xMax - xMin));
+  const Y = v => T + (H - T - B) * (1 - (v - yMin) / (yMax - yMin || 1));
+  let g = "";
+  for(let k = 0; k <= 4; k++){
+    const v = yMin + (yMax - yMin) * k / 4, y = Y(v);
+    g += `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)">${eur0(v).replace(/\s?€/,"")}</text>`;
+  }
+  const y0 = Math.floor(xMin/12), y1 = Math.floor(xMax/12), span = y1 - y0;
+  const step = span > 24 ? 5 : span > 10 ? 2 : 1;
+  for(let y = y0 + 1; y <= y1; y++){
+    if((y % step) !== 0) continue;
+    const x = X(y*12);
+    g += `<line x1="${x}" x2="${x}" y1="${H-B}" y2="${H-B+4}" stroke="var(--muted)"/>`;
+    g += `<text x="${x}" y="${H-B+17}" text-anchor="middle" font-size="11" fill="var(--muted)">${y}</text>`;
+  }
+  if(opts.markIdx != null && opts.markIdx >= xMin && opts.markIdx <= xMax){
+    const x = X(opts.markIdx);
+    g += `<line x1="${x}" x2="${x}" y1="${T}" y2="${H-B}" stroke="var(--gold)" stroke-dasharray="4 4"/>`;
+    g += `<text x="${x+4}" y="${T+10}" font-size="11" fill="var(--gold)">${esc(opts.markLabel || "")}</text>`;
+  }
+  for(const s of series){
+    const d = s.pts.map((p,i) => (i ? "L" : "M") + X(p.m).toFixed(1) + " " + Y(p.v).toFixed(1)).join(" ");
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.2}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ""} stroke-linejoin="round"/>`;
+    if(s.dots) for(const p of s.pts) g += `<circle cx="${X(p.m)}" cy="${Y(p.v)}" r="3" fill="${s.color}"/>`;
+  }
+  const legend = series.length > 1 ? `<div class="legend">${series.map(s => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label || "Verlauf der Restschuld")}">${g}</svg>${legend}</div>`;
+}
+const simPts = (p, sim) => [{m: ymToIdx(p.restMonat), v: p.rest}, ...sim.rows.map(r => ({m:r.m, v:r.bal}))];
+
+/* ---------- overview ---------- */
+function renderOverview(){
+  const el = $("#tab-overview");
+  const p = S.params;
+  if(!p){ el.innerHTML = emptyState("Trag zuerst die Eckdaten deines Kredits ein – danach siehst du hier Laufzeit, Fixzinsphase und Restschuld auf einen Blick."); return; }
+  const mode = contractMode();
+  const base = simulate(p, [], mode);
+  const anchor = ymToIdx(p.restMonat), end = ymToIdx(p.ende);
+  const fix = p.fixEnde ? ymToIdx(p.fixEnde) : null;
+  const begin = p.beginn ? ymToIdx(p.beginn) : anchor;
+  const span = Math.max(1, Math.max(end, base.lastIdx) - begin + 1);
+  const pos = i => Math.min(100, Math.max(0, (i - begin + 1) / span * 100));
+  const todayRow = curIdx > anchor ? rowAt(base, curIdx) : null;
+  const currentZins = (fix != null && anchor >= fix && p.zinsVar != null && !isNaN(p.zinsVar)) ? p.zinsVar : p.zinsFix;
+  const remaining = base.lastIdx - Math.max(anchor, curIdx - 1);
+  const fixRow = fix != null && fix > anchor ? rowAt(base, fix) : null;
+  const afterFix = fix != null && fix >= anchor ? rowAt(base, fix + 1) : null;
+  const lastJ = [...S.journal].sort((a,b) => b.ym.localeCompare(a.ym))[0];
+
+  let warn = "";
+  if(!base.paidOff) warn = `<p class="note err">Mit dieser Rate wird der Kredit nicht abbezahlt – die Rate deckt die Zinsen nicht. Bitte Rate, Zinssatz und Restschuld prüfen.</p>`;
+  else if(Math.abs(base.lastIdx - end) > 1){
+    const cur = p.zinsMethode || "30/360";
+    const alt = ["30/360", "act/360", "act/365"].filter(x => x !== cur)
+      .map(x => ({x, d: Math.abs(simulate({...p, zinsMethode:x}, [], mode).lastIdx - end)}))
+      .sort((a, b) => a.d - b.d)[0];
+    const better = alt && alt.d < Math.abs(base.lastIdx - end) && alt.d <= 2;
+    warn = `<p class="note">Mit den eingetragenen Werten endet der Kredit rechnerisch im ${fmtM(base.lastIdx)}, laut Vertrag im ${fmtM(end)}. ${better ? `Mit der Zinsberechnung <b>${alt.x}</b> würde es fast genau passen – das kannst du in den Kreditdaten umstellen.` : "Mögliche Gründe: eine andere Zinsberechnung der Bank, Spesen oder Versicherung in der Rate, oder ein Tippfehler bei Rate, Zinssatz oder Restschuld."} Die Wirkung von Sondertilgungen auf die Rate stimmt trotzdem, nur das berechnete Laufzeitende weicht ab.</p>`;
+  }
+
+  const fixBand = fix != null ? `<div class="tl-fixband" style="left:${pos(fix)}%;right:0"></div>` : "";
+  const marks = [];
+  marks.push(`<div class="tl-mark" style="left:${pos(Math.min(curIdx, end))}%"><span>Heute</span></div>`);
+  if(fix != null && fix < end) marks.push(`<div class="tl-mark gold" style="left:${pos(fix)}%"><span>Fixzins bis ${fmtMs(fix)}</span></div>`);
+
+  el.innerHTML = `
+  <div class="hero">
+    <div>
+      <p class="muted">${todayRow ? "Restschuld laut Plan heute" : "Restschuld"}</p>
+      <p class="hero-figure">${eur(todayRow ? todayRow.bal : p.rest)}</p>
+      <p class="hero-sub muted small">${todayRow ? `Ausgangswert: ${eur(p.rest)} nach der Rate im ${fmtM(anchor)}` : `Stand nach der Rate im ${fmtM(anchor)}`}${p.betrag ? ` · ursprünglich ${eur0(p.betrag)}` : ""}</p>
+    </div>
+    <div class="timeline" aria-hidden="true">
+      <div class="tl-track"><div class="tl-paid" style="width:${pos(Math.min(curIdx, end))}%"></div>${fixBand}</div>
+      ${marks.join("")}
+      <div class="tl-ends"><span>${p.beginn ? "Beginn " + fmtMs(begin) : "Stand " + fmtMs(anchor)}</span><span>Ende ${fmtMs(end)}</span></div>
+    </div>
+  </div>
+  ${warn}
+  <dl class="facts">
+    <div><dt>Derzeitige Monatsrate</dt><dd>${eur(p.rate)}</dd></div>
+    <div><dt>Zinssatz derzeit</dt><dd>${pct(currentZins)}<small>${fix == null ? "fix bis zum Ende" : (anchor < fix ? "fix" : "variabel")}</small></dd></div>
+    <div><dt>Fixzins endet</dt><dd>${fix == null ? "–" : fmtM(fix)}${fix != null && fix >= curIdx ? `<small>noch ${dur(fix - curIdx + 1)}</small>` : ""}</dd></div>
+    <div><dt>Angenommener Zins danach</dt><dd>${fix == null ? "–" : (p.zinsVar != null && !isNaN(p.zinsVar) ? pct(p.zinsVar) : "nicht angegeben")}</dd></div>
+    <div><dt>Restschuld zum Fixzinsende</dt><dd>${fixRow ? eur(fixRow.bal) : "–"}</dd></div>
+    <div><dt>Rate nach Fixzinsende (geschätzt)</dt><dd>${afterFix && p.neuNachFix ? eur(afterFix.rate) : (fix == null ? "–" : eur(p.rate))}</dd></div>
+    <div><dt>Laufzeitende laut Vertrag</dt><dd>${fmtM(end)}</dd></div>
+    <div><dt>Restlaufzeit</dt><dd>${base.paidOff ? dur(Math.max(0, remaining)) : "–"}<small>rechnerisch bis ${fmtM(base.lastIdx)}</small></dd></div>
+    <div><dt>Zinsen bis zum Ende</dt><dd>${base.paidOff ? eur(base.totalInt) : "–"}<small>ab dem Ausgangswert</small></dd></div>
+    <div><dt>Sondertilgung wirkt auf</dt><dd>${mode === "laufzeit" ? "die Laufzeit" : "die Monatsrate"}${hasFee(p) ? `<small>${feeRuleText(p)}</small>` : ""}</dd></div>
+    ${hasFee(p) && p.freibetrag != null ? `<div><dt>Heute gebührenfrei sondertilgbar</dt><dd>${eur(freeLeft(p, new Date()))}<small>${p.freiZeitraum === "calendar" ? "Rest des Kalenderjahres" : "Rahmen der letzten 365 Tage"}</small></dd></div>` : ""}
+    <div><dt>Letzter Journaleintrag</dt><dd>${lastJ ? eur(lastJ.amount) : "–"}${lastJ ? `<small>${fmtM(ymToIdx(lastJ.ym))}</small>` : ""}</dd></div>
+  </dl>
+  ${p.notiz ? `<div class="panel" style="margin-top:24px"><h3 style="margin-bottom:6px">Notizen</h3><p style="white-space:pre-wrap">${esc(p.notiz)}</p></div>` : ""}
+  <div class="btn-row" style="margin-top:28px">
+    <button class="btn" data-goto="special">Sondertilgung berechnen</button>
+    <button class="btn ghost" data-goto="journal">Restschuld eintragen</button>
+  </div>`;
+}
+
+/* ---------- special payment ---------- */
+const MODE_TXT = {rate:"Rate senken", laufzeit:"Laufzeit verkürzen"};
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const dateOfSp = s => new Date(Math.floor(s.idx/12), s.idx%12, s.day, 12);
+const fmtD = s => dateOfSp(s).toLocaleDateString("de-AT");
+const modeTag = m => `<span class="tag${m === "laufzeit" ? " lz" : ""}">${m === "laufzeit" ? "Laufzeit" : "Rate"}</span>`;
+let saveTimer;
+const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); };
+
+function renderOutputChoices(){
+  $("#outputChoices").innerHTML = OUTPUTS.map(([k, l]) =>
+    `<label class="choice"><input type="checkbox" data-out="${k}" ${S.outputs[k] ? "checked" : ""}>${l}</label>`).join("");
+  $("#cmpUniform").checked = S.cmpUniform;
+}
+$("#outputChoices").addEventListener("change", e => {
+  const k = e.target.dataset.out; if(!k) return;
+  S.outputs[k] = e.target.checked; save();
+  if(lastCalc) renderResult(lastCalc);
+});
+$("#cmpUniform").addEventListener("change", e => { S.cmpUniform = e.target.checked; save(); });
+
+function newEntry(){
+  const last = S.plan[S.plan.length - 1];
+  let date;
+  if(last && last.date){
+    const d = new Date(last.date + "T12:00:00");
+    const c = parseInt(last.count, 10);
+    d.setFullYear(d.getFullYear() + (last.repeat === "yearly" && c > 0 ? c : 1));
+    date = iso(d);
+  } else date = iso(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+  return {id: Math.random().toString(36).slice(2, 9), amount: last ? last.amount : "", date, repeat: last ? last.repeat : "once", count: "", mode: contractMode()};
+}
+function renderEntries(){
+  const many = S.plan.length > 1;
+  $("#stEntries").innerHTML = S.plan.map((e, i) => {
+    const id = "st-" + e.id;
+    return `<div class="st-entry" data-id="${esc(e.id)}">
+      <div class="st-entry-head"><strong><span class="num-badge">${i+1}</span>Sondertilgung</strong>${many ? `<button type="button" class="btn link danger" data-remove>Entfernen</button>` : ""}</div>
+      <div class="st-grid">
+        <div class="field"><label for="${id}-a">Betrag</label><input id="${id}-a" data-k="amount" type="text" inputmode="decimal" placeholder="z. B. 10.000" value="${esc(e.amount)}"></div>
+        <div class="field"><label for="${id}-d">${e.repeat === "yearly" ? "Erstes Datum" : "Datum"}</label><input id="${id}-d" data-k="date" type="date" value="${esc(e.date)}"></div>
+        <div class="field"><label for="${id}-r">Wiederholen</label><select id="${id}-r" data-k="repeat"><option value="once"${e.repeat !== "yearly" ? " selected" : ""}>einmalig</option><option value="yearly"${e.repeat === "yearly" ? " selected" : ""}>jährlich</option></select></div>
+        <div class="field"${e.repeat === "yearly" ? "" : " hidden"}><label for="${id}-c">Wie oft?</label><input id="${id}-c" data-k="count" type="text" inputmode="numeric" placeholder="leer = bis zum Ende" value="${esc(e.count)}"></div>
+      </div>
+      <div class="field"><span class="small" style="display:block;font-weight:500;margin-bottom:5px">Wirkung</span>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="${id}-m" data-k="mode" value="rate"${e.mode !== "laufzeit" ? " checked" : ""}>Rate senken</label>
+          <label><input type="radio" name="${id}-m" data-k="mode" value="laufzeit"${e.mode === "laufzeit" ? " checked" : ""}>Laufzeit verkürzen</label>
+        </div>
+      </div>
+      <p class="hint fee" data-fee="${i}" hidden></p>
+    </div>`;
+  }).join("");
+  updateFeeHints();
+}
+function onEntryEdit(e){
+  const t = e.target, box = t.closest(".st-entry");
+  if(!box || !t.dataset.k) return;
+  const en = S.plan.find(x => x.id === box.dataset.id); if(!en) return;
+  if(t.type === "radio" && !t.checked) return;
+  en[t.dataset.k] = t.value;
+  if(t.dataset.k === "repeat" && e.type === "change"){ renderEntries(); }
+  saveSoon(); updateFeeHints();
+}
+$("#stEntries").addEventListener("input", onEntryEdit);
+$("#stEntries").addEventListener("change", onEntryEdit);
+$("#stEntries").addEventListener("click", e => {
+  if(!e.target.closest("[data-remove]")) return;
+  const id = e.target.closest(".st-entry").dataset.id;
+  S.plan = S.plan.filter(x => x.id !== id); renderEntries(); saveSoon();
+});
+$("#addEntry").addEventListener("click", () => {
+  S.plan.push(newEntry()); renderEntries(); saveSoon();
+  const boxes = $$("#stEntries .st-entry"); const lastBox = boxes[boxes.length - 1];
+  lastBox.scrollIntoView({behavior:"smooth", block:"center"});
+  $("input[data-k=amount]", lastBox).focus({preventScroll:true});
+});
+
+function expandPlan(p, base){
+  const anchor = ymToIdx(p.restMonat), errs = [], list = [];
+  S.plan.forEach((e, i) => {
+    const n = S.plan.length > 1 ? `Sondertilgung ${i+1}: ` : "";
+    const amount = parseNum(e.amount);
+    if(!(amount > 0)){ errs.push(n + "Betrag fehlt."); return; }
+    if(!e.date){ errs.push(n + "Datum fehlt."); return; }
+    const [y, m, d] = e.date.split("-").map(Number);
+    const idx = y*12 + m - 1;
+    if(idx <= anchor){ errs.push(`${n}muss nach dem Stand der Restschuld (${fmtM(anchor)}) liegen.`); return; }
+    let count = 1;
+    if(e.repeat === "yearly"){
+      const c = parseInt(e.count, 10);
+      if(String(e.count || "").trim() && !(c > 0)){ errs.push(n + "„Wie oft?“ bitte als Zahl angeben."); return; }
+      count = c > 0 ? c : 100;
+    }
+    for(let k = 0; k < count && k < 100; k++){
+      const ii = idx + 12*k;
+      if(k > 0 && ii > base.lastIdx) break;
+      list.push({idx:ii, day:Math.min(d, daysIn(ii)), amount, mode: e.mode === "laufzeit" ? "laufzeit" : "rate", entry:i});
+    }
+  });
+  list.sort((a, b) => a.idx - b.idx || a.day - b.day);
+  return {errs, list};
+}
+function updateFeeHints(){
+  const p = S.params, els = $$("#stEntries [data-fee]");
+  if(!hasFee(p)){ els.forEach(el => el.hidden = true); return; }
+  const {list} = expandPlan(p, simulate(p, []));
+  const fees = plannedFees(p, list.map(s => ({date:dateOfSp(s), amount:s.amount})));
+  const per = {};
+  list.forEach((s, k) => { const x = per[s.entry] || (per[s.entry] = {fee:0, n:0}); x.fee += fees[k].fee; x.n++; });
+  els.forEach(el => {
+    const x = per[+el.dataset.fee];
+    if(!x){ el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = x.fee > 0.004 ? `Gebühr ca. ${eur(x.fee)}${x.n > 1 ? ` (über ${x.n} Zahlungen)` : ""}` : (p.freibetrag != null ? "Innerhalb des gebührenfreien Rahmens" : "");
+    if(!el.textContent) el.hidden = true;
+  });
+}
+
+function renderSpecialTab(){
+  if(!S.params){ $("#stEntries").innerHTML = ""; $("#stResult").innerHTML = emptyState("Für die Berechnung brauche ich zuerst deine Kreditdaten."); return; }
+  if(!S.plan.length) S.plan.push(newEntry());
+  renderEntries();
+  if(!lastCalc) $("#stResult").innerHTML = `<div class="panel empty"><p class="muted">Sondertilgungen eintragen, dann auf „Berechnen“ tippen.</p></div>`;
+}
+
+$("#stForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const p = S.params; if(!p) return;
+  const base = simulate(p, []);
+  const {errs, list} = expandPlan(p, base);
+  if(!S.plan.length) errs.push("Bitte mindestens eine Sondertilgung eintragen.");
+  if(errs.length){ $("#stResult").innerHTML = `<p class="note err">${errs.map(esc).join("<br>")}</p>`; return; }
+  save();
+  const defs = [{label:"Dein Plan", override:null}];
+  if(S.cmpUniform){
+    const modes = new Set(list.map(s => s.mode));
+    if(!(modes.size === 1 && modes.has("rate"))) defs.push({label:"Alles Rate senken", override:"rate"});
+    if(!(modes.size === 1 && modes.has("laufzeit"))) defs.push({label:"Alles Laufzeit verkürzen", override:"laufzeit"});
+  }
+  const scen = defs.map(def => {
+    const sim = simulate(p, list, def.override);
+    const fees = plannedFees(p, sim.applied.map(a => ({date:dateOfSp(a), amount:a.amount})));
+    const feeTotal = fees.reduce((a, f) => a + f.fee, 0);
+    const steps = sim.applied.map((a, k) => {
+      const simK = simulate(p, sim.applied.slice(0, k+1), def.override);
+      const row = rowAt(sim, a.idx), next = rowAt(simK, a.idx + 1);
+      return {a, bal: row ? row.bal : 0, rate: next ? next.rate : 0, end: simK.lastIdx, save: base.totalInt - simK.totalInt, fee: fees[k].fee};
+    });
+    return {...def, sim, fees, feeTotal, steps};
+  });
+  lastCalc = {list, base, scen};
+  renderResult(lastCalc);
+  if(window.innerWidth <= 860) $("#stResult").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+function renderResult(c){
+  const p = S.params, o = S.outputs;
+  const fix = p.fixEnde ? ymToIdx(p.fixEnde) : null;
+  const anchor = ymToIdx(p.restMonat);
+  const first = c.list[0];
+  const after = first.idx + 1;
+  const cols = [{label:"Ohne Sondertilgung", sim:c.base, base:true}, ...c.scen];
+  const rows = [];
+  const add = (label, fn) => rows.push(`<tr><td>${label}</td>${cols.map(col => `<td>${fn(col)}</td>`).join("")}</tr>`);
+  const lastApplied = col => col.sim.applied[col.sim.applied.length - 1];
+
+  add("Sondertilgung gesamt", col => col.base ? "–" : `${eur(col.sim.totalSt)}<br><span class="muted small">${col.sim.applied.length} ${col.sim.applied.length === 1 ? "Zahlung" : "Zahlungen"}</span>`);
+  if(o.rate){
+    add(`Monatsrate ab ${fmtM(after)}`, col => { const r = rowAt(col.sim, after); return r ? eur(r.rate) : "abbezahlt"; });
+    add("Veränderung der Rate", col => {
+      if(col.base) return "–";
+      const a = rowAt(c.base, after), b = rowAt(col.sim, after);
+      if(!a) return "–";
+      const d = (b ? b.rate : 0) - a.rate;
+      return Math.abs(d) < 0.005 ? "unverändert" : `<span class="${d < 0 ? "good" : ""}">${d < 0 ? "−" : "+"}${eur(Math.abs(d))}</span>`;
+    });
+    if(c.list.length > 1) add("Rate nach der letzten Sondertilgung", col => {
+      if(col.base) return "–";
+      const la = lastApplied(col); if(!la) return "–";
+      const r = rowAt(col.sim, la.idx + 1);
+      return r ? `${eur(r.rate)}<br><span class="muted small">ab ${fmtMs(la.idx + 1)}</span>` : "abbezahlt";
+    });
+  }
+  if(o.end){
+    add("Letzte Rate", col => fmtM(col.sim.lastIdx));
+    add(`Restlaufzeit ab ${fmtM(after)}`, col => dur(Math.max(0, col.sim.lastIdx - first.idx)));
+    add("Verkürzung", col => {
+      if(col.base) return "–";
+      const d = c.base.lastIdx - col.sim.lastIdx;
+      return d > 0 ? `<span class="good">${dur(d)}</span>` : "keine";
+    });
+  }
+  if(o.fee && hasFee(p)){
+    if(p.freibetrag != null) add("Davon gebührenfrei", col => col.base ? "–" : eur(col.fees.reduce((a, f) => a + f.free, 0)));
+    add(`Gebühr (${pct(p.gebuehr)}${p.freibetrag != null ? " auf den Rest" : ""})`, col => col.base ? "–" : eur(col.feeTotal));
+  }
+  if(o.savings){
+    add("Zinsen bis zum Ende", col => eur(col.sim.totalInt));
+    add("Zinsersparnis", col => col.base ? "–" : `<span class="good">${eur(c.base.totalInt - col.sim.totalInt)}</span>`);
+    if(hasFee(p)) add("Ersparnis nach Gebühr", col => col.base ? "–" : eur(c.base.totalInt - col.sim.totalInt - col.feeTotal));
+  }
+  if(o.fix && fix != null && fix > anchor){
+    add(`Restschuld nach ${fmtM(fix)}`, col => { const r = rowAt(col.sim, fix); return r ? eur(r.bal) : eur(0); });
+    add(`Rate ab ${fmtM(fix + 1)}`, col => { const r = rowAt(col.sim, fix + 1); return r ? eur(r.rate) : "abbezahlt"; });
+  }
+
+  const total = c.list.reduce((a, s) => a + s.amount, 0);
+  const title = c.list.length === 1 ? `${eur(first.amount)} am ${fmtD(first)}` : `${c.list.length} Sondertilgungen · ${eur(total)}`;
+  const sub = c.list.length === 1 ? MODE_TXT[first.mode] : `${fmtD(first)} bis ${fmtD(c.list[c.list.length - 1])}`;
+  let feeNote = "";
+  if(o.fee && hasFee(p) && p.freibetrag != null){
+    const left = freeLeft(p, dateOfSp(first));
+    feeNote = `<p class="muted small">${feeRuleText(p)}. Am ${fmtD(first)} sind noch ${eur(left)} gebührenfrei${left < p.freibetrag ? ` (${eur(p.freibetrag - left)} bereits sondergetilgt laut Journal)` : ""}.</p>`;
+  }
+
+  let html = `<div class="panel stack">
+    <div><h2>${esc(title)}</h2><p class="muted small" style="margin-top:2px">${esc(sub)}</p></div>
+    ${feeNote}
+    <div class="scroll"><table class="cmp"><thead><tr><th></th>${cols.map(col => `<th class="${col.base ? "" : "scen"}">${col.label}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
+  if(c.scen.some(s => !s.sim.paidOff) || !c.base.paidOff) html += `<p class="note err">Die Rate reicht nicht, um den Kredit abzubezahlen. Ergebnisse sind nicht aussagekräftig – bitte Kreditdaten prüfen.</p>`;
+  if(o.chart){
+    const colors = ["var(--accent)", "var(--gold)", "var(--c3)"];
+    const series = [{name:"Ohne Sondertilgung", color:"var(--base-line)", pts:simPts(p, c.base), dash:"5 4", width:1.8},
+      ...c.scen.map((s, i) => ({name:s.label, color:colors[i], pts:simPts(p, s.sim)}))];
+    html += `<div><h3 style="margin-bottom:8px">Restschuld-Verlauf</h3>${lineChart(series, {markIdx: fix, markLabel:"Fixzinsende"})}</div>`;
+  }
+  html += `</div>`;
+
+  if(o.years){
+    for(const s of c.scen){
+      if(!s.steps.length) continue;
+      html += `<div class="panel"><h3 style="margin-bottom:4px">Entwicklung nach jeder Sondertilgung${c.scen.length > 1 ? " – " + esc(s.label) : ""}</h3>
+      <p class="muted small" style="margin-bottom:12px">„Letzte Rate“ und „Ersparnis“ gelten, falls danach keine weitere Sondertilgung mehr kommt.</p>
+      <div class="scroll"><table><thead><tr><th>Datum</th><th>Betrag</th><th>Wirkung</th><th>Restschuld<br>Monatsende</th><th>Rate ab<br>Folgemonat</th><th>Letzte Rate</th>${hasFee(p) ? "<th>Gebühr</th>" : ""}<th>Ersparnis<br>bis dahin</th></tr></thead><tbody>
+      ${s.steps.map(y => `<tr><td>${fmtD(y.a)}</td><td>${eur(y.a.amount)}</td><td>${modeTag(y.a.mode)}</td><td>${eur(y.bal)}</td><td>${y.rate ? eur(y.rate) : "abbezahlt"}</td><td>${fmtMs(y.end)}</td>${hasFee(p) ? `<td>${eur(y.fee)}</td>` : ""}<td class="good">${eur(y.save)}</td></tr>`).join("")}
+      </tbody></table></div></div>`;
+    }
+  }
+  if(o.plan){
+    c.scen.forEach((s, i) => {
+      html += `<div class="panel"><details ${i === 0 ? "open" : ""}><summary>Monatlicher Tilgungsplan${c.scen.length > 1 ? " – " + esc(s.label) : ""} (${s.sim.rows.length} Monate)</summary>
+      <div class="scroll tall" style="margin-top:10px"><table><thead><tr><th>Monat</th><th>Zins</th><th>Rate</th><th>Zinsanteil</th><th>Tilgung</th><th>Sondertilgung</th><th>Restschuld</th></tr></thead><tbody>
+      ${s.sim.rows.map(r => `<tr class="${r.st ? "st" : ""}${fix != null && r.m === fix ? " fixrow" : ""}"><td>${fmtMs(r.m)}</td><td>${pct(r.zins)}</td><td>${eur(r.rate)}</td><td>${eur(r.interest)}</td><td>${eur(r.tilgung)}</td><td>${r.st ? eur(r.st) : ""}</td><td>${eur(r.bal)}</td></tr>`).join("")}
+      </tbody></table></div></details></div>`;
+    });
+  }
+  html += `<p class="muted small">Näherungsrechnung mit Zinsberechnung ${esc(p.zinsMethode || "30/360")} und Rate am Monatsende. „Rate senken“ verteilt die neue Restschuld auf die bis dahin geplante Laufzeit – auch eine zuvor schon verkürzte. Die Bank kann leicht abweichen.</p>`;
+  $("#stResult").innerHTML = `<div class="stack">${html}</div>`;
+}
+
+/* ---------- journal ---------- */
+function renderJournal(){
+  const list = [...S.journal].sort((a,b) => b.ym.localeCompare(a.ym));
+  if(!$("#jMonth").value) $("#jMonth").value = idxToYm(curIdx);
+  prefillZins();
+  if(!list.length){ $("#jList").innerHTML = `<div class="panel empty"><p class="muted">Noch keine Einträge. Trag die Restschuld laut Kontoauszug ein – so entsteht mit der Zeit dein eigener Verlauf.</p></div>`; return; }
+  const asc = [...list].reverse();
+  const pts = asc.map(j => ({m:ymToIdx(j.ym), v:j.amount}));
+  const latest = list[0];
+  const p = S.params;
+  const isAnchor = p && p.restMonat === latest.ym && Math.abs(p.rest - latest.amount) < 0.005;
+  const rows = list.map((j, i) => {
+    const prev = list[i+1];
+    const diff = prev ? j.amount - prev.amount : null;
+    return `<tr><td>${fmtM(ymToIdx(j.ym))}</td><td>${eur(j.amount)}</td><td>${diff == null ? "" : (diff <= 0 ? "−" : "+") + eur(Math.abs(diff))}</td><td>${has(j.zins) ? pct(j.zins) : ""}</td><td>${has(j.tilgung) ? eur(j.tilgung) : ""}</td><td>${j.st ? eur(j.st) + (j.stDate ? `<br><span class="muted small">${new Date(j.stDate + "T12:00:00").toLocaleDateString("de-AT")}</span>` : "") : ""}</td><td style="text-align:left;white-space:normal;min-width:140px">${esc(j.note)}</td><td><button class="btn link" data-edit="${esc(j.ym)}">Bearbeiten</button><button class="btn link danger" data-del="${esc(j.ym)}" aria-label="Eintrag ${esc(fmtM(ymToIdx(j.ym)))} löschen">Löschen</button></td></tr>`;
+  }).join("");
+  $("#jList").innerHTML = `
+    ${pts.length > 1 ? `<div class="panel"><h3 style="margin-bottom:8px">Verlauf</h3>${lineChart([{name:"Restschuld", color:"var(--accent)", pts, dots: pts.length <= 36}], {yMin: Math.max(0, Math.min(...pts.map(p => p.v)) * 0.97), label:"Eingetragene Restschuld"})}</div>` : ""}
+    <div class="panel">
+      <div class="result-head" style="margin-bottom:10px"><h3>${list.length} ${list.length === 1 ? "Eintrag" : "Einträge"}</h3>
+      ${p && !isAnchor ? `<button class="btn ghost" id="useLatest">${fmtMs(ymToIdx(latest.ym))} als Ausgangswert übernehmen</button>` : (p ? `<span class="pill">Neuester Eintrag ist Ausgangswert</span>` : "")}</div>
+      ${feeStatusHtml()}<div class="scroll"><table><thead><tr><th>Monat</th><th>Restschuld</th><th>Veränderung</th><th>Zins</th><th>Tilgung<br>über Rate</th><th>Sonder-<br>tilgung</th><th style="text-align:left">Notiz</th><th></th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td>Summe</td><td></td><td></td><td></td><td>${eur(list.reduce((a, j) => a + (has(j.tilgung) ? j.tilgung : 0), 0))}</td><td>${eur(list.reduce((a, j) => a + (j.st || 0), 0))}</td><td></td><td></td></tr></tfoot></table></div>
+    </div>`;
+}
+function zinsForMonth(ym){
+  const p = S.params; if(!p || !ym) return null;
+  const i = ymToIdx(ym), fix = p.fixEnde ? ymToIdx(p.fixEnde) : null;
+  return fix != null && i > fix && has(p.zinsVar) ? p.zinsVar : p.zinsFix;
+}
+function prefillZins(){
+  const z = $("#jZins");
+  if(z.value && z.dataset.auto !== "1") return;
+  const v = zinsForMonth($("#jMonth").value);
+  z.value = v == null ? "" : numStr(v); z.dataset.auto = "1";
+}
+$("#jMonth").addEventListener("change", prefillZins);
+$("#jZins").addEventListener("input", () => { $("#jZins").dataset.auto = ""; });
+$("#jDerive").addEventListener("click", () => {
+  const ym = $("#jMonth").value, amount = parseNum($("#jAmount").value);
+  const prev = S.journal.filter(j => j.ym < ym).sort((a, b) => b.ym.localeCompare(a.ym))[0];
+  if(!prev || isNaN(amount)){ toast("Dafür braucht es die Restschuld und einen früheren Eintrag"); return; }
+  const st = parseNum($("#jSt").value) || 0;
+  $("#jTilgung").value = numStr(Math.round((prev.amount - amount - st) * 100) / 100);
+  toast(prev.ym === idxToYm(ymToIdx(ym) - 1) ? "Aus Vormonat abgeleitet" : `Aus Eintrag ${fmtMs(ymToIdx(prev.ym))} abgeleitet – umfasst mehrere Monate`);
+});
+$("#jForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const ym = $("#jMonth").value, amount = parseNum($("#jAmount").value), note = $("#jNote").value.trim();
+  const opt = id => { const v = parseNum($(id).value); return isNaN(v) ? null : v; };
+  const zins = opt("#jZins"), tilgung = opt("#jTilgung"), st = opt("#jSt");
+  const stDate = st ? $("#jStDate").value : "";
+  if(!ym || !(amount >= 0)){ toast("Bitte Monat und Restschuld eingeben"); return; }
+  S.journal = S.journal.filter(j => j.ym !== ym);
+  S.journal.push({ym, amount, note, zins, tilgung, st, stDate});
+  save();
+  ["#jAmount","#jNote","#jTilgung","#jSt","#jStDate"].forEach(s => $(s).value = "");
+  $("#jZins").dataset.auto = "1";
+  const [y,m] = ym.split("-").map(Number);
+  $("#jMonth").value = idxToYm(y*12 + m);
+  renderJournal(); renderOverview();
+  updateFeeHints();
+  toast("Eintrag gespeichert");
+});
+$("#jList").addEventListener("click", e => {
+  const ed = e.target.closest("[data-edit]");
+  if(ed){
+    const j = S.journal.find(x => x.ym === ed.dataset.edit); if(!j) return;
+    $("#jMonth").value = j.ym; $("#jAmount").value = numStr(j.amount); $("#jNote").value = j.note || "";
+    $("#jZins").value = numStr(j.zins); $("#jZins").dataset.auto = "";
+    $("#jTilgung").value = numStr(j.tilgung); $("#jSt").value = numStr(j.st); $("#jStDate").value = j.stDate || "";
+    $("#jForm").scrollIntoView({behavior:"smooth", block:"start"}); $("#jAmount").focus({preventScroll:true});
+    return;
+  }
+  const del = e.target.closest("[data-del]");
+  if(del){
+    const ym = del.dataset.del;
+    if(!confirm(`Eintrag für ${fmtM(ymToIdx(ym))} löschen?`)) return;
+    S.journal = S.journal.filter(j => j.ym !== ym); save(); renderJournal(); renderOverview(); toast("Eintrag gelöscht"); return;
+  }
+  if(e.target.id === "useLatest" && S.params){
+    const latest = [...S.journal].sort((a,b) => b.ym.localeCompare(a.ym))[0];
+    S.params = {...S.params, rest: latest.amount, restMonat: latest.ym};
+    save(); lastCalc = null; renderAll(); toast("Ausgangswert aktualisiert");
+  }
+});
+
+/* ---------- setup ---------- */
+const F = id => $("#f_" + id);
+function fillSetup(p = S.params){
+  p = p || {};
+  F("name").value = p.name || "";
+  F("betrag").value = numStr(p.betrag);
+  F("beginn").value = p.beginn || "";
+  F("ende").value = p.ende || "";
+  F("rate").value = numStr(p.rate);
+  F("rest").value = numStr(p.rest);
+  F("restMonat").value = p.restMonat || "";
+  F("zinsFix").value = numStr(p.zinsFix);
+  F("fixEnde").value = p.fixEnde || "";
+  F("zinsVar").value = numStr(p.zinsVar);
+  F("neuNachFix").checked = p.neuNachFix !== false;
+  F("zinsMethode").value = p.zinsMethode || "30/360";
+  $$('input[name="f_wirkung"]').forEach(r => r.checked = r.value === (p.wirkung || "rate"));
+  F("gebuehr").value = numStr(p.gebuehr);
+  F("freibetrag").value = numStr(p.freibetrag);
+  F("freiZeitraum").value = p.freiZeitraum || "rolling";
+  F("notiz").value = p.notiz || "";
+  $("#setupError").hidden = true;
+}
+$("#fillExample").addEventListener("click", () => {
+  const restMonat = idxToYm(curIdx - 1), ende = idxToYm(curIdx - 1 + 300);
+  const rest = 285000, z = 1.4;
+  const rate = Math.round(annuity(rest, z/1200, 300) * 100) / 100;
+  fillSetup({name:"Wohnbaukredit", betrag:350000, beginn:idxToYm(curIdx - 61), ende, rate, rest, restMonat, zinsFix:z, fixEnde:idxToYm(curIdx + 54), zinsVar:3.5, neuNachFix:true, wirkung:"rate", gebuehr:1, freibetrag:34700, freiZeitraum:"rolling", notiz:""});
+  toast("Beispielwerte eingesetzt – noch nicht gespeichert");
+});
+$("#setupForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const n = id => parseNum(F(id).value);
+  const p = {
+    name: F("name").value.trim(),
+    betrag: n("betrag"), beginn: F("beginn").value, ende: F("ende").value,
+    rate: n("rate"), rest: n("rest"), restMonat: F("restMonat").value,
+    zinsFix: n("zinsFix"), fixEnde: F("fixEnde").value, zinsVar: n("zinsVar"),
+    neuNachFix: F("neuNachFix").checked, zinsMethode: F("zinsMethode").value,
+    wirkung: $('input[name="f_wirkung"]:checked').value,
+    gebuehr: n("gebuehr"), freibetrag: n("freibetrag"), freiZeitraum: F("freiZeitraum").value, notiz: F("notiz").value.trim()
+  };
+  const errs = [];
+  if(!p.ende) errs.push("Letzte Rate laut Vertrag fehlt.");
+  if(!(p.rate > 0)) errs.push("Monatsrate fehlt.");
+  if(!(p.rest > 0)) errs.push("Restschuld fehlt.");
+  if(!p.restMonat) errs.push("Monat zur Restschuld fehlt.");
+  if(!(p.zinsFix >= 0)) errs.push("Zinssatz fehlt.");
+  if(p.ende && p.restMonat && ymToIdx(p.ende) <= ymToIdx(p.restMonat)) errs.push("Das Laufzeitende muss nach dem Monat der Restschuld liegen.");
+  if(p.beginn && p.ende && ymToIdx(p.beginn) >= ymToIdx(p.ende)) errs.push("Der Beginn muss vor dem Laufzeitende liegen.");
+  if(p.fixEnde && !(p.zinsVar >= 0)) errs.push("Bitte einen erwarteten Zinssatz nach dem Fixzinsende angeben.");
+  if(p.freibetrag > 0 && !(p.gebuehr > 0)) errs.push("Bitte die Gebühr in % angeben, die über dem Freibetrag anfällt.");
+  if(errs.length){ const el = $("#setupError"); el.innerHTML = errs.map(esc).join("<br>"); el.hidden = false; return; }
+  for(const k of ["betrag","zinsVar","gebuehr","freibetrag"]) if(isNaN(p[k])) p[k] = null;
+  S.params = p; save(); lastCalc = null; renderAll();
+  toast("Kreditdaten gespeichert"); showTab("overview");
+});
+
+/* ---------- backup ---------- */
+async function download(name, text, type){
+  const blob = new Blob([text], {type});
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if(standalone && navigator.canShare){
+    try{
+      const file = new File([blob], name, {type});
+      if(navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:name}); return; }
+    }catch(e){ if(e && e.name === "AbortError") return; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+const stamp = () => new Date().toISOString().slice(0,10);
+$("#exportBtn").addEventListener("click", () => {
+  download(`hauskredit-sicherung-${stamp()}.json`, JSON.stringify(snapshot(), null, 2), "application/json");
+  toast("Sicherung heruntergeladen");
+});
+$("#importBtn").addEventListener("click", () => $("#importFile").click());
+$("#importFile").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if(!f) return;
+  try{
+    const d = JSON.parse(await f.text());
+    if(!d || typeof d !== "object" || !("params" in d || "journal" in d)) throw new Error();
+    if((S.params || S.journal.length) && !confirm("Die aktuellen Daten auf diesem Gerät werden durch die Sicherung ersetzt. Fortfahren?")) return;
+    applyData(d); save(); lastCalc = null; renderAll(); fillSetup();
+    toast("Sicherung geladen");
+  }catch(err){ toast("Die Datei ist keine gültige Sicherung"); }
+});
+$("#csvBtn").addEventListener("click", () => {
+  if(!S.journal.length){ toast("Das Journal ist noch leer"); return; }
+  const n = v => has(v) ? String(v).replace(".", ",") : "";
+  const q = s => '"' + String(s || "").replace(/"/g, '""') + '"';
+  const lines = ["Monat;Restschuld;Zinssatz;Tilgung über Rate;Sondertilgung;Datum Sondertilgung;Notiz",
+    ...[...S.journal].sort((a,b) => a.ym.localeCompare(b.ym)).map(j => [j.ym, n(j.amount), n(j.zins), n(j.tilgung), n(j.st), j.stDate || "", q(j.note)].join(";"))];
+  download(`hauskredit-journal-${stamp()}.csv`, "\ufeff" + lines.join("\r\n"), "text/csv;charset=utf-8");
+  toast("CSV heruntergeladen");
+});
+
+/* ---------- boot ---------- */
+function renderAll(){
+  $("#loanTitle").textContent = S.params?.name || "Hauskredit";
+  renderOverview(); renderOutputChoices(); renderSpecialTab(); renderJournal(); setSaveState();
+}
+loadLocal();
+renderAll();
+
+/* ---------- PWA ---------- */
+if("serviceWorker" in navigator && location.protocol !== "file:"){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+if(navigator.storage && navigator.storage.persist){
+  navigator.storage.persisted().then(p => p || navigator.storage.persist()).then(ok => {
+    const el = $("#appInfo");
+    if(el && ok) el.textContent += " · Daten vor automatischem Löschen geschützt";
+  }).catch(() => {});
+}
+})();
+</script>
+</body>
+</html>
