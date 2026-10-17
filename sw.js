@@ -2,7 +2,7 @@
    Seite: zuerst aus dem Netz (damit Updates sofort ankommen), offline aus dem Cache.
    Schriften und Icons: aus dem Cache.
    Bei Änderungen an Schriften oder Icons die VERSION erhöhen. */
-const VERSION = "hauskredit-1.0.0";
+const VERSION = "hauskredit-1.0.1";
 const ASSETS = [
   "./",
   "./index.html",
