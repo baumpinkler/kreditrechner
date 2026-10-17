@@ -40,7 +40,10 @@ denn beim Löschen der App oder der Browserdaten sind die Daten sonst weg.
 
 Einfach die geänderte `index.html` im Repository ersetzen. Die App lädt die neue Version beim
 nächsten Start automatisch, sobald das Handy online ist. Wurden Schriften oder Icons geändert,
-in `sw.js` die `VERSION` erhöhen.
+in `sw.js` die `VERSION` erhöhen und den geänderten Dateien **neue Namen** geben
+(z. B. `icon-512-v3.png`, Verweise in `manifest.webmanifest`, `index.html` und `sw.js` anpassen).
+Android übernimmt ein neues Icon nur bei einer Neuinstallation: App über *App-Info → Deinstallieren* entfernen
+(vorher Sicherung herunterladen) und in Chrome neu installieren.
 
 ## Schriften
 

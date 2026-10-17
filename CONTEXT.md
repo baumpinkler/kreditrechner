@@ -2,7 +2,7 @@
 
 > **So nutzt du diese Datei:** In einem neuen Chat diese `CONTEXT.md` und die aktuelle `index.html` hochladen und dazuschreiben, was du ändern möchtest. Nach jeder größeren Änderung diese Datei mit aktualisieren lassen.
 
-Stand: Oktober 2026 · App-Version 1.0.0 · Service-Worker-Cache `hauskredit-1.0.0`
+Stand: Oktober 2026 · App-Version 1.0.2 · Service-Worker-Cache `hauskredit-1.0.2`
 
 ---
 
@@ -23,7 +23,8 @@ hauskredit-pwa/
 ├── index.html             komplette App (HTML + CSS + JS in einer Datei, Vanilla JS, keine Libraries)
 ├── sw.js                  Service Worker
 ├── manifest.webmanifest   PWA-Manifest (standalone, theme #1F5C45)
-├── icons/                 icon-192/512, icon-maskable-512, apple-touch-icon (180), favicon-32
+├── icons/                 icon-192-v2/512-v2, icon-maskable-512-v2, apple-touch-icon-v2 (180), favicon-32-v2
+│                          (Motiv: grünes Haus mit Liste, Euro-Münze, Diagramm und Rechner auf Schwarz, vom Nutzer bereitgestellt)
 ├── fonts/                 IBM Plex Sans 400/500/600, IBM Plex Serif 500/600 (latin, woff2, lokal)
 ├── README.md              Anleitung GitHub Pages + Installation
 └── .nojekyll
@@ -144,6 +145,7 @@ Monate werden intern als Index gerechnet: `idx = Jahr*12 + Monat-1`. Hilfsfunkti
 
 - **`sw.js`.** Seitenaufrufe kommen zuerst aus dem Netz (`cache: "no-cache"`), offline aus der gecachten `index.html`. Andere Dateien kommen zuerst aus dem Cache. `skipWaiting` und `clients.claim` sind gesetzt.
 - **Updates.** Für eine neue App-Version genügt es, `index.html` zu ersetzen. Bei geänderten Icons oder Schriften muss `VERSION` in `sw.js` erhöht werden.
+- **Icons ändern.** Immer **neue Dateinamen** verwenden (`-v3` usw.) und in Manifest, `index.html` und `sw.js` anpassen. Das Manifest wird mit `?v=…` eingebunden und vom Service Worker immer frisch geladen. Android/Chrome übernimmt neue Icons sonst oft nicht, weil es sie unter derselben Adresse zwischenspeichert.
 - **Speicher.** Die App fordert `navigator.storage.persist()` an.
 - **Downloads in der installierten App.** Sicherung und CSV gehen über `navigator.share` mit Datei, sonst über einen normalen Download-Link.
 - **iOS.** Die installierte App hat einen eigenen Speicher, getrennt von Safari. Daten werden per Sicherungsdatei übertragen.
@@ -163,6 +165,8 @@ Monate werden intern als Index gerechnet: `idx = Jahr*12 + Monat-1`. Hilfsfunkti
 4. Layout-Fixes (Überlauf, sticky erste Spalte). Mehrere Sondertilgungen mit eigener Wirkung und Wiederholung.
 5. Ratenberechnung korrigiert (proportional statt Neuberechnung). Einstellung „Zinsberechnung der Bank“ mit Vorschlag im Plausibilitätscheck.
 6. Umbau zur PWA für GitHub Pages: Manifest, Service Worker, Icons, lokale Schriften.
+7. Eigene App-Icons aus Nutzer-Grafik (Version 1.0.1). Manifest-`background_color` auf `#000000` passend zum Icon.
+8. Icons erschienen auf Android nicht → Dateinamen mit `-v2` versioniert, Manifest wird frisch geladen (Version 1.0.2).
 
 ## Ideen für später (noch nicht umgesetzt)
 
