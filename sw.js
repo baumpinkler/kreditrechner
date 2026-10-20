@@ -3,7 +3,7 @@
    Schriften und Icons: aus dem Cache.
    Bei Änderungen an Schriften oder Icons die VERSION erhöhen UND die Dateinamen ändern
    (z. B. icon-512-v3.png), sonst zeigen Android/Chrome oft weiter das alte Icon. */
-const VERSION = "hauskredit-1.0.2";
+const VERSION = "hauskredit-1.1.0";
 const ASSETS = [
   "./",
   "./index.html",

@@ -67,6 +67,7 @@ a{color:var(--accent)}
 .tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;overflow-x:auto;max-width:100%}
 .tabs button{appearance:none;border:0;background:transparent;color:var(--muted);font:500 .9rem var(--sans);padding:7px 13px;border-radius:7px;cursor:pointer;white-space:nowrap}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs .ti{display:none}
 .tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 main{padding-top:28px;padding-bottom:64px}
@@ -160,14 +161,54 @@ tfoot td{font-weight:600;border-bottom:0;border-top:2px solid var(--line)}
 .st-entry input,.st-entry select{background:var(--surface)}
 .st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0 12px}
 .st-entry .fee{color:var(--ink);margin:-4px 0 4px}
+/* Budget */
+.pos{color:var(--accent)} .neg{color:var(--danger)}
+td.neg{color:var(--danger);font-weight:600}
+.note.ok{border-color:var(--accent);background:var(--accent-soft)}
+.b-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.seg.seg-sm label{padding:6px 16px;white-space:nowrap}
+.b-figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px 24px;margin-bottom:14px}
+.b-figs .lbl{font-size:.85rem;color:var(--muted)}
+.b-figs .val{font-family:var(--serif);font-size:1.7rem;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}
+.bbar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);margin:6px 0 4px}
+.bbar span{display:block;height:100%}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px}
+.pcard-head{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.pcard-head input{font-weight:600;font-size:1.05rem}
+.psum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:.82rem;color:var(--muted)}
+.psum b{display:block;font-size:1rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.psum b.pos{color:var(--accent)} .psum b.neg{color:var(--danger)}
+.ilist h4{font-size:.85rem;font-weight:600;margin:14px 0 6px;color:var(--muted)}
+.item-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) auto auto;gap:6px;align-items:center;margin-bottom:6px}
+.item-row.shared{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto auto auto}
+.item-row input,.item-row select{min-height:38px;padding:7px 9px;font-size:.95rem}
+.icon-btn{appearance:none;border:0;background:none;color:var(--muted);font-size:1.3rem;line-height:1;width:34px;height:38px;border-radius:8px;cursor:pointer}
+.icon-btn:hover{color:var(--danger);background:var(--danger-soft)}
+.fin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0}
+.fin-grid div{background:var(--bg);border-radius:8px;padding:10px 12px}
+.fin-grid .lbl{display:block;font-size:.8rem;color:var(--muted)}
+.fin-grid b{display:block;font-size:1.1rem;font-variant-numeric:tabular-nums}
 @media (max-width:600px){
   .wrap{padding:0 14px}
   main{padding-top:20px}
   .panel{padding:16px;border-radius:10px}
   .top .wrap{padding-top:10px;padding-bottom:8px;gap:8px}
   .brand h1{font-size:1.15rem}
-  .tabs{width:100%}
-  .tabs button{flex:1 0 auto;padding:7px 8px;font-size:.84rem}
+  /* App-Leiste unten */
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);gap:0;max-width:none;border:0;border-top:1px solid var(--line);border-radius:0;background:var(--surface);padding:6px 2px calc(6px + env(safe-area-inset-bottom,0px));overflow:visible}
+  .tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px 0;font-size:.66rem;border-radius:0;min-width:0}
+  .tabs button[aria-selected="true"]{background:transparent;color:var(--accent)}
+  .tabs .ti{display:grid;place-items:center;width:46px;height:28px;border-radius:14px}
+  .tabs button[aria-selected="true"] .ti{background:var(--accent-soft)}
+  .tabs .ti svg{width:21px;height:21px}
+  main{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .fin-grid{grid-template-columns:1fr 1fr}
+  .item-row,.item-row.shared{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
+  .item-row [data-ik=name]{grid-column:1/-1}
+  .item-row{padding-bottom:8px;margin-bottom:8px;border-bottom:1px dashed var(--line)}
+  .item-row [data-ik=scope]{grid-column:1/-1;order:5}
+  .b-figs .val{font-size:1.35rem}
   .hide-sm{display:none}
   table{font-size:.85rem}
   th,td{padding:7px 8px}
@@ -197,10 +238,11 @@ details summary{cursor:pointer;font-weight:500;padding:6px 0}
       <p id="saveState" class="muted small">Lädt …</p>
     </div>
     <nav class="tabs" role="tablist" aria-label="Bereiche">
-      <button role="tab" data-tab="overview" aria-selected="true">Übersicht</button>
-      <button role="tab" data-tab="special" aria-selected="false">Sondertilgung</button>
-      <button role="tab" data-tab="journal" aria-selected="false"><span class="hide-sm">Restschuld-</span>Journal</button>
-      <button role="tab" data-tab="setup" aria-selected="false">Kreditdaten</button>
+      <button role="tab" data-tab="overview" aria-selected="true"><i class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg></i><span>Übersicht</span></button>
+      <button role="tab" data-tab="special" aria-selected="false"><i class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v9M8.5 12.5 12 16l3.5-3.5"/></svg></i><span>Sondertilgung</span></button>
+      <button role="tab" data-tab="journal" aria-selected="false"><i class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></i><span><span class="hide-sm">Restschuld-</span>Journal</span></button>
+      <button role="tab" data-tab="budget" aria-selected="false"><i class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M16 13h2"/><path d="M5 6l11-3 1 3"/></svg></i><span>Budget</span></button>
+      <button role="tab" data-tab="setup" aria-selected="false"><i class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></i><span>Kredit<span class="hide-sm">daten</span></span></button>
     </nav>
   </div>
 </header>
@@ -271,6 +313,26 @@ details summary{cursor:pointer;font-weight:500;padding:6px 0}
         <button class="btn" type="submit" style="width:100%">Eintrag speichern</button>
       </form>
       <div id="jList" class="stack"></div>
+    </div>
+  </section>
+
+  <!-- Budget -->
+  <section id="tab-budget" role="tabpanel" hidden>
+    <div class="b-head">
+      <h2>Budget</h2>
+      <div class="seg seg-sm" role="radiogroup" aria-label="Zeitraum">
+        <label><input type="radio" name="bview" value="month">pro Monat</label>
+        <label><input type="radio" name="bview" value="year">pro Jahr</label>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="panel" id="bTotal"></div>
+      <div>
+        <div class="result-head" style="margin-bottom:12px"><h2>Personen</h2><button class="btn ghost" type="button" data-add-person>+ Person</button></div>
+        <div class="pgrid" id="bPersons"></div>
+      </div>
+      <div class="panel" id="bShared"></div>
+      <div class="panel" id="bFin"></div>
     </div>
   </section>
 
@@ -352,7 +414,7 @@ details summary{cursor:pointer;font-weight:500;padding:6px 0}
         <button class="btn ghost" type="button" id="csvBtn">Journal als CSV</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <p class="muted small" style="margin-top:16px" id="appInfo">Version 1.0.2</p>
+      <p class="muted small" style="margin-top:16px" id="appInfo">Version 1.1.0</p>
     </div>
   </section>
 </main>
@@ -373,7 +435,7 @@ const OUTPUTS = [
   ["plan", "Monatlicher Tilgungsplan"]
 ];
 const DEFAULT_OUT = {rate:true,end:true,savings:true,fee:true,fix:true,chart:true,years:true,plan:false};
-let S = {params:null, journal:[], outputs:{...DEFAULT_OUT}, plan:[], cmpUniform:false};
+let S = {params:null, journal:[], outputs:{...DEFAULT_OUT}, plan:[], cmpUniform:false, budget:null};
 let lastCalc = null;
 
 const $ = (s, r=document) => r.querySelector(s);
@@ -519,8 +581,9 @@ function applyData(d){
   S.outputs = {...DEFAULT_OUT, ...(d.outputs || {})};
   S.plan = Array.isArray(d.plan) ? d.plan : [];
   S.cmpUniform = !!d.cmpUniform;
+  S.budget = normBudget(d.budget);
 }
-function snapshot(){ return {params:S.params, journal:S.journal, outputs:S.outputs, plan:S.plan, cmpUniform:S.cmpUniform, updated:new Date().toISOString()}; }
+function snapshot(){ return {params:S.params, journal:S.journal, outputs:S.outputs, plan:S.plan, cmpUniform:S.cmpUniform, budget:S.budget, updated:new Date().toISOString()}; }
 function save(){
   const data = snapshot();
   try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){}
@@ -537,6 +600,7 @@ function showTab(name){
   $$(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"));
   $$("main > section").forEach(s => s.hidden = s.id !== "tab-" + name);
   if(name === "setup") fillSetup();
+  if(name === "budget") renderBudget();
   window.scrollTo({top:0});
 }
 $$(".tabs button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
@@ -649,6 +713,7 @@ function renderOverview(){
     <div><dt>Sondertilgung wirkt auf</dt><dd>${mode === "laufzeit" ? "die Laufzeit" : "die Monatsrate"}${hasFee(p) ? `<small>${feeRuleText(p)}</small>` : ""}</dd></div>
     ${hasFee(p) && p.freibetrag != null ? `<div><dt>Heute gebührenfrei sondertilgbar</dt><dd>${eur(freeLeft(p, new Date()))}<small>${p.freiZeitraum === "calendar" ? "Rest des Kalenderjahres" : "Rahmen der letzten 365 Tage"}</small></dd></div>` : ""}
     <div><dt>Letzter Journaleintrag</dt><dd>${lastJ ? eur(lastJ.amount) : "–"}${lastJ ? `<small>${fmtM(ymToIdx(lastJ.ym))}</small>` : ""}</dd></div>
+    ${budgetHasData() ? (() => { const bc = budgetCalc(); return `<div><dt>Überschuss laut Budget</dt><dd class="${bc.total.surplus < 0 ? "neg" : ""}">${eur(bc.total.surplus)}<small>pro Monat, alle Personen</small></dd></div>`; })() : ""}
   </dl>
   ${p.notiz ? `<div class="panel" style="margin-top:24px"><h3 style="margin-bottom:6px">Notizen</h3><p style="white-space:pre-wrap">${esc(p.notiz)}</p></div>` : ""}
   <div class="btn-row" style="margin-top:28px">
@@ -904,6 +969,10 @@ function renderResult(c){
       </tbody></table></div></details></div>`;
     });
   }
+  if(budgetHasData()){
+    const fr = planFinanceCalc(p, c.scen[0].sim);
+    if(fr) html += `<div class="panel"><h3 style="margin-bottom:10px">Finanzierung aus dem Budget</h3>${financeVerdict(fr)}<button class="btn link" type="button" data-goto="budget" style="padding-left:0">Details im Budget</button></div>`;
+  }
   html += `<p class="muted small">Näherungsrechnung mit Zinsberechnung ${esc(p.zinsMethode || "30/360")} und Rate am Monatsende. „Rate senken“ verteilt die neue Restschuld auf die bis dahin geplante Laufzeit – auch eine zuvor schon verkürzte. Die Bank kann leicht abweichen.</p>`;
   $("#stResult").innerHTML = `<div class="stack">${html}</div>`;
 }
@@ -1094,12 +1163,267 @@ $("#csvBtn").addEventListener("click", () => {
   toast("CSV heruntergeladen");
 });
 
+/* ---------- budget ---------- */
+const uid = () => Math.random().toString(36).slice(2, 9);
+const DEFAULT_FIN = {amount:"", date:"", saved:"", who:"all", share:"100"};
+function normBudget(b){
+  b = b && typeof b === "object" ? b : {};
+  const items = a => Array.isArray(a) ? a.filter(i => i && typeof i === "object").map(i => ({id:i.id || uid(), type:i.type === "out" ? "out" : "in", name:i.name || "", amount:i.amount == null ? "" : String(i.amount), period:i.period === "year" ? "year" : "month", scope:i.scope === "each" ? "each" : "split"})) : [];
+  return {
+    persons: Array.isArray(b.persons) ? b.persons.map(p => ({id:p.id || uid(), name:p.name || "", items:items(p.items)})) : [],
+    shared: items(b.shared),
+    split: b.split === "income" ? "income" : "equal",
+    autoRate: b.autoRate !== false,
+    view: b.view === "year" ? "year" : "month",
+    fin: {...DEFAULT_FIN, ...(b.fin || {})}
+  };
+}
+const budgetHasData = () => !!S.budget && (S.budget.persons.length > 0 || S.budget.shared.length > 0);
+const monthly = it => { const v = parseNum(it.amount); return isNaN(v) ? 0 : (it.period === "year" ? v / 12 : v); };
+const sumM = (items, type, scope) => items.filter(i => i.type === type && (!scope || i.scope === scope)).reduce((a, i) => a + monthly(i), 0);
+function loanRateAt(p, sim, m){
+  const r = rowAt(sim, m); if(r) return r.rate;
+  return m <= ymToIdx(p.restMonat) ? p.rate : 0;
+}
+const currentLoanRate = () => S.params ? loanRateAt(S.params, simulate(S.params, []), curIdx) : 0;
+
+// alle Beträge pro Monat
+function budgetCalc(loanRate){
+  const B = S.budget, P = B.persons, n = P.length;
+  const loan = B.autoRate && S.params ? (loanRate == null ? currentLoanRate() : loanRate) : 0;
+  const sInSplit = sumM(B.shared, "in", "split"), sInEach = sumM(B.shared, "in", "each");
+  const sOutSplit = sumM(B.shared, "out", "split") + loan, sOutEach = sumM(B.shared, "out", "each");
+  const own = P.map(p => ({inc:sumM(p.items, "in"), out:sumM(p.items, "out")}));
+  const ownInc = own.reduce((a, o) => a + o.inc, 0), ownOut = own.reduce((a, o) => a + o.out, 0);
+  const shares = P.map((p, i) => B.split === "income" && ownInc > 0 ? own[i].inc / ownInc : 1 / n);
+  const persons = P.map((p, i) => {
+    const sharedInc = sInSplit * shares[i] + sInEach, sharedOut = sOutSplit * shares[i] + sOutEach;
+    const inc = own[i].inc + sharedInc, out = own[i].out + sharedOut;
+    return {id:p.id, name:p.name || `Person ${i+1}`, share:shares[i], sharedInc, sharedOut, loanShare:loan * shares[i], inc, out, surplus:inc - out};
+  });
+  const k = Math.max(n, 1);
+  const inc = ownInc + sInSplit + sInEach * k, out = ownOut + sOutSplit + sOutEach * k;
+  return {persons, loan, n, total:{inc, out, surplus:inc - out}};
+}
+function surplusFor(c, who){
+  if(who && who !== "all"){ const p = c.persons.find(x => x.id === who); if(p) return p.surplus; }
+  return c.total.surplus;
+}
+function whoText(c, who){
+  const p = who && who !== "all" ? c.persons.find(x => x.id === who) : null;
+  return p ? `bei ${p.name}` : "bei allen zusammen";
+}
+const finShare = () => { const v = parseNum(S.budget.fin.share); return isNaN(v) ? 1 : Math.min(100, Math.max(0, v)) / 100; };
+const vf = () => S.budget.view === "year" ? 12 : 1;
+const vlab = () => S.budget.view === "year" ? "pro Jahr" : "pro Monat";
+
+function itemRow(it, shared){
+  return `<div class="item-row${shared ? " shared" : ""}" data-iid="${esc(it.id)}">
+    <input data-ik="name" type="text" placeholder="${it.type === "in" ? (shared ? "z. B. Familienbeihilfe" : "z. B. Gehalt") : (shared ? "z. B. Betriebskosten" : "z. B. Auto, Handy")}" value="${esc(it.name)}" aria-label="Bezeichnung">
+    <input data-ik="amount" type="text" inputmode="decimal" placeholder="Betrag" value="${esc(it.amount)}" aria-label="Betrag in Euro">
+    <select data-ik="period" aria-label="Rhythmus"><option value="month"${it.period !== "year" ? " selected" : ""}>/ Monat</option><option value="year"${it.period === "year" ? " selected" : ""}>/ Jahr</option></select>
+    ${shared ? `<select data-ik="scope" aria-label="Verteilung"><option value="split"${it.scope !== "each" ? " selected" : ""}>gemeinsam, aufgeteilt</option><option value="each"${it.scope === "each" ? " selected" : ""}>für jede Person</option></select>` : ""}
+    <button type="button" class="icon-btn" data-del-item aria-label="Eintrag entfernen">×</button>
+  </div>`;
+}
+function itemLists(items, shared){
+  const block = (type, title, add) => `<div class="ilist"><h4>${title}</h4><div>${items.filter(i => i.type === type).map(i => itemRow(i, shared)).join("") || `<p class="muted small" style="margin:0 0 4px">Noch nichts eingetragen.</p>`}</div><button type="button" class="btn link" data-add="${type}" style="padding-left:0">+ ${add}</button></div>`;
+  return block("in", "Netto-Einnahmen", "Einnahme") + block("out", "Netto-Ausgaben", "Ausgabe");
+}
+function renderBudget(){
+  const B = S.budget;
+  $$('input[name="bview"]').forEach(r => r.checked = r.value === B.view);
+  $("#tab-budget .result-head [data-add-person]").hidden = !B.persons.length;
+  $("#bPersons").innerHTML = B.persons.length ? B.persons.map((p, i) => `<div class="panel" data-pid="${esc(p.id)}">
+      <div class="pcard-head"><input data-pk="name" type="text" placeholder="Person ${i+1}" value="${esc(p.name)}" aria-label="Name"><button type="button" class="btn link danger" data-del-person>Entfernen</button></div>
+      <div class="psum" data-psum></div>
+      ${itemLists(p.items, false)}
+      <p class="hint">Bei 14 Gehältern am besten das Jahresnetto eintragen und „/ Jahr“ wählen.</p>
+    </div>`).join("")
+    : `<div class="panel empty"><p class="muted">Leg für jede Person, die am Kredit beteiligt ist, ein Profil mit ihren Einnahmen und Ausgaben an.</p><button class="btn" type="button" data-add-person>+ Person anlegen</button></div>`;
+  $("#bShared").innerHTML = `<h2 style="margin-bottom:4px">Gemeinsam für alle</h2>
+    <p class="muted small" style="margin-bottom:14px">„Gemeinsam, aufgeteilt“ wird auf die Personen verteilt (z. B. Betriebskosten, Strom). „Für jede Person“ zählt pro Kopf voll (z. B. ein Ticket oder eine Versicherung, die jede Person hat).</p>
+    <div class="field"><span class="small" style="display:block;font-weight:500;margin-bottom:5px">Gemeinsames aufteilen</span>
+      <div class="seg" role="radiogroup"><label><input type="radio" name="bsplit" value="equal"${B.split === "equal" ? " checked" : ""}>zu gleichen Teilen</label><label><input type="radio" name="bsplit" value="income"${B.split === "income" ? " checked" : ""}>nach Einkommen</label></div></div>
+    ${S.params ? `<label class="choice" style="margin-bottom:4px"><input type="checkbox" id="bAutoRate"${B.autoRate ? " checked" : ""}><span>Kreditrate automatisch als gemeinsame Ausgabe einrechnen <span class="muted">(derzeit ${eur(currentLoanRate())} pro Monat)</span></span></label>` : ""}
+    <div data-shared>${itemLists(B.shared, true)}</div>`;
+  renderFinForm();
+  updateBudgetNumbers();
+}
+function renderFinForm(){
+  const B = S.budget, f = B.fin;
+  if(f.who !== "all" && !B.persons.some(p => p.id === f.who)) f.who = "all";
+  const opts = `<option value="all">Alle zusammen</option>` + B.persons.map((p, i) => `<option value="${esc(p.id)}"${f.who === p.id ? " selected" : ""}>${esc(p.name || `Person ${i+1}`)}</option>`).join("");
+  $("#bFin").innerHTML = `<h2 style="margin-bottom:4px">Sondertilgung finanzieren</h2>
+    <p class="muted small" style="margin-bottom:16px">Wie viel muss bis zu einem Datum zur Seite gelegt werden – und reicht der Überschuss dafür?</p>
+    <div class="st-grid">
+      <div class="field"><label for="finAmount">Betrag</label><input id="finAmount" data-fk="amount" type="text" inputmode="decimal" placeholder="z. B. 10.000" value="${esc(f.amount)}"></div>
+      <div class="field"><label for="finDate">Bis zum</label><input id="finDate" data-fk="date" type="date" value="${esc(f.date)}"></div>
+      <div class="field"><label for="finSaved">Bereits gespart</label><input id="finSaved" data-fk="saved" type="text" inputmode="decimal" placeholder="0" value="${esc(f.saved)}"></div>
+      <div class="field"><label for="finWho">Wer spart?</label><select id="finWho" data-fk="who">${opts}</select></div>
+      <div class="field"><label for="finShare">Anteil vom Überschuss (%)</label><input id="finShare" data-fk="share" type="text" inputmode="decimal" value="${esc(f.share)}"><p class="hint">So viel vom Überschuss fließt ins Sparen.</p></div>
+    </div>
+    <div id="finResult"></div>
+    <div id="planFinResult" style="margin-top:22px"></div>`;
+}
+function updateBudgetNumbers(){
+  if(!S.budget || !$("#bTotal")) return;
+  const c = budgetCalc(), f = vf(), T = c.total;
+  const quote = T.inc > 0 ? T.surplus / T.inc * 100 : null;
+  const max = Math.max(T.inc, T.out);
+  const w = v => max > 0 ? Math.max(0, v / max * 100) : 0;
+  const other = T.out - c.loan;
+  $("#bTotal").innerHTML = `<h2 style="margin-bottom:14px">Gesamtübersicht <span class="muted small" style="font-weight:400">${vlab()}${c.n ? ` · ${c.n} ${c.n === 1 ? "Person" : "Personen"}` : ""}</span></h2>
+    <div class="b-figs">
+      <div><div class="lbl">Netto-Einnahmen</div><div class="val">${eur(T.inc * f)}</div></div>
+      <div><div class="lbl">Netto-Ausgaben</div><div class="val">${eur(T.out * f)}</div></div>
+      <div><div class="lbl">Überschuss</div><div class="val ${T.surplus < 0 ? "neg" : "pos"}">${eur(T.surplus * f)}</div></div>
+      <div><div class="lbl">Sparquote</div><div class="val">${quote == null ? "–" : quote.toLocaleString("de-AT", {maximumFractionDigits:1}) + " %"}</div></div>
+    </div>
+    ${max > 0 ? `<div class="bbar" role="img" aria-label="Aufteilung: Kreditrate, sonstige Ausgaben, Überschuss"><span style="width:${w(c.loan)}%;background:var(--gold)"></span><span style="width:${w(other)}%;background:var(--base-line)"></span><span style="width:${w(Math.max(0, T.surplus))}%;background:var(--accent)"></span></div>
+    <div class="legend">${c.loan > 0 ? `<span><i style="background:var(--gold)"></i>Kreditrate ${eur(c.loan * f)}</span>` : ""}<span><i style="background:var(--base-line)"></i>Sonstige Ausgaben ${eur(other * f)}</span><span><i style="background:var(--accent)"></i>Überschuss</span></div>`
+    : `<p class="muted small">Trag Einnahmen und Ausgaben ein, dann siehst du hier die Aufteilung.</p>`}
+    ${c.n ? `<div class="scroll" style="margin-top:16px"><table><thead><tr><th>Person</th><th>Einnahmen</th><th>Ausgaben</th><th>davon<br>gemeinsam</th><th>Überschuss</th></tr></thead><tbody>${c.persons.map(p => `<tr><td>${esc(p.name)}</td><td>${eur(p.inc * f)}</td><td>${eur(p.out * f)}</td><td>${eur(p.sharedOut * f)}</td><td class="${p.surplus < 0 ? "neg" : "good"}">${eur(p.surplus * f)}</td></tr>`).join("")}</tbody></table></div>` : ""}`;
+  c.persons.forEach(p => {
+    const el = $(`[data-pid="${p.id}"] [data-psum]`); if(!el) return;
+    el.innerHTML = `<div>Einnahmen<b>${eur(p.inc * f)}</b></div><div>Ausgaben<b>${eur(p.out * f)}</b></div><div>Überschuss<b class="${p.surplus < 0 ? "neg" : "pos"}">${eur(p.surplus * f)}</b></div>`
+      + ((p.sharedInc || p.sharedOut) ? `<div style="grid-column:1/-1">inkl. Anteil gemeinsam${p.sharedInc ? ` +${eur(p.sharedInc * f)}` : ""}${p.sharedOut ? ` −${eur(p.sharedOut * f)}` : ""}${c.loan ? ` (davon Kreditrate ${eur(p.loanShare * f)})` : ""} · ${Math.round(p.share * 100)} % Anteil</div>` : "");
+  });
+  updateFinance(c);
+}
+function updateFinance(c){
+  const el = $("#finResult"); if(!el) return;
+  const f = S.budget.fin, share = finShare();
+  const surplus = surplusFor(c, f.who), avail = Math.max(0, surplus) * share;
+  const amount = parseNum(f.amount), saved = parseNum(f.saved) || 0;
+  let html;
+  if(!(amount > 0) || !f.date) html = `<p class="muted small">Betrag und Datum eingeben – dann siehst du, wie viel pro Jahr, Monat, Woche und Tag gespart werden muss.</p>`;
+  else {
+    const target = new Date(f.date + "T12:00:00"), today = new Date(); today.setHours(12, 0, 0, 0);
+    const days = Math.round((target - today) / DAY), need = Math.max(0, amount - saved);
+    if(days <= 0) html = `<p class="note err">Das Datum muss in der Zukunft liegen.</p>`;
+    else if(need === 0) html = `<p class="note ok">Schon geschafft – das Ersparte deckt den Betrag.</p>`;
+    else {
+      const perDay = need / days, perMonth = perDay * 30.436875;
+      html = `<p class="small">Bis ${fmtDate(target)} sind es <b>${days.toLocaleString("de-AT")} Tage</b>${saved ? `; es fehlen noch ${eur(need)}` : ""}. Dafür zur Seite legen:</p>
+        <div class="fin-grid"><div><span class="lbl">pro Jahr</span><b>${eur(perDay * 365.25)}</b></div><div><span class="lbl">pro Monat</span><b>${eur(perMonth)}</b></div><div><span class="lbl">pro Woche</span><b>${eur(perDay * 7)}</b></div><div><span class="lbl">pro Tag</span><b>${eur(perDay)}</b></div></div>`;
+      if(!budgetHasData()) html += `<p class="muted small">Leg oben Personen mit Einnahmen und Ausgaben an, dann prüfe ich auch, ob sich das ausgeht.</p>`;
+      else if(surplus <= 0) html += `<p class="note err">Kein Überschuss ${whoText(c, f.who)} (${eur(surplus)} pro Monat) – so ist das nicht finanzierbar.</p>`;
+      else if(perMonth <= avail + 0.005) html += `<p class="note ok">Geht sich aus: Das sind ${Math.round(perMonth / surplus * 100)} % vom Überschuss ${whoText(c, f.who)} (${eur(surplus)} pro Monat). Danach bleiben ${eur(surplus - perMonth)} pro Monat übrig.</p>`;
+      else {
+        const earliest = new Date(today.getTime() + need / avail * 30.436875 * DAY);
+        html += `<p class="note err">Geht sich nicht aus: Verfügbar sind ${eur(avail)} pro Monat${share < 1 ? ` (${Math.round(share * 100)} % vom Überschuss)` : ""} ${whoText(c, f.who)}, nötig wären ${eur(perMonth)} – es fehlen ${eur(perMonth - avail)} pro Monat. ${avail > 0 ? `Mit ${eur(avail)} pro Monat wäre der Betrag am ${fmtDate(earliest)} beisammen.` : ""}</p>`;
+      }
+    }
+  }
+  el.innerHTML = html;
+  updatePlanFinance();
+}
+// Ersparnis Monat für Monat: Sondertilgungen werden aus dem bis dahin Ersparten bezahlt
+function planFinanceCalc(p, sim){
+  const ap = sim.applied; if(!ap.length || !budgetHasData()) return null;
+  const f = S.budget.fin, share = finShare(), saved = parseNum(f.saved) || 0;
+  const fees = plannedFees(p, ap.map(a => ({date:dateOfSp(a), amount:a.amount})));
+  const last = ap[ap.length - 1].idx;
+  let bal = saved, k = 0, short = null;
+  const steps = [];
+  for(let m = curIdx; m <= Math.max(last, curIdx); m++){
+    while(k < ap.length && ap[k].idx <= m){
+      const a = ap[k], before = bal;
+      bal -= a.amount + fees[k].fee;
+      steps.push({a, fee:fees[k].fee, before, after:bal});
+      if(bal < -0.005 && !short) short = {a, missing:-bal};
+      k++;
+    }
+    const s = surplusFor(budgetCalc(loanRateAt(p, sim, m)), f.who);
+    bal += s > 0 ? s * share : s;
+  }
+  return {steps, short};
+}
+function financeVerdict(r){
+  if(!r.short) return `<p class="note ok">Finanzierbar: Nach der letzten Sondertilgung sind noch ${eur(r.steps[r.steps.length - 1].after)} übrig.</p>`;
+  return `<p class="note err">Nicht ganz finanzierbar: Am ${fmtD(r.short.a)} fehlen ${eur(r.short.missing)}.</p>`;
+}
+function updatePlanFinance(){
+  const el = $("#planFinResult"); if(!el) return;
+  const p = S.params;
+  if(!p || !S.plan.length || !budgetHasData()){ el.innerHTML = ""; return; }
+  const {errs, list} = expandPlan(p, simulate(p, []));
+  if(!list.length){ el.innerHTML = ""; return; }
+  const r = planFinanceCalc(p, simulate(p, list));
+  if(!r){ el.innerHTML = ""; return; }
+  el.innerHTML = `<h3 style="margin-bottom:4px">Dein Sondertilgungs-Plan</h3>
+    <p class="muted small" style="margin-bottom:12px">Der Plan aus dem Reiter „Sondertilgung“, gespart ab ${fmtM(curIdx)} mit „Bereits gespart“ als Startwert, inkl. Gebühren.${S.budget.autoRate && S.params ? " Die Kreditrate im Budget folgt dabei dem Plan – sinkt sie, steigt der Überschuss." : ""}</p>
+    ${financeVerdict(r)}
+    <div class="scroll"><table><thead><tr><th>Datum</th><th>Sondertilgung</th><th>Erspart davor</th><th>Danach</th></tr></thead><tbody>${r.steps.map(s => `<tr><td>${fmtD(s.a)}</td><td>${eur(s.a.amount + s.fee)}${s.fee > 0.004 ? `<br><span class="muted small">inkl. ${eur(s.fee)} Gebühr</span>` : ""}</td><td>${eur(s.before)}</td><td class="${s.after < -0.005 ? "neg" : ""}">${eur(s.after)}</td></tr>`).join("")}</tbody></table></div>
+    ${errs.length ? `<p class="muted small" style="margin-top:8px">Unvollständige Einträge im Plan wurden ausgelassen.</p>` : ""}`;
+}
+
+// Eingaben
+const bTab = $("#tab-budget");
+function ownerOf(el){
+  const pc = el.closest("[data-pid]");
+  if(pc) return S.budget.persons.find(p => p.id === pc.dataset.pid);
+  if(el.closest("[data-shared]")) return {items:S.budget.shared, shared:true};
+  return null;
+}
+function onBudgetInput(e){
+  const t = e.target, B = S.budget;
+  if(t.name === "bview"){ if(t.checked){ B.view = t.value; save(); updateBudgetNumbers(); } return; }
+  if(t.name === "bsplit"){ if(t.checked){ B.split = t.value; saveSoon(); updateBudgetNumbers(); } return; }
+  if(t.id === "bAutoRate"){ B.autoRate = t.checked; saveSoon(); updateBudgetNumbers(); return; }
+  if(t.dataset.fk){ B.fin[t.dataset.fk] = t.value; saveSoon(); updateFinance(budgetCalc()); return; }
+  if(t.dataset.pk){
+    const p = ownerOf(t); if(!p) return;
+    p.name = t.value; saveSoon(); updateBudgetNumbers();
+    const o = $(`#finWho option[value="${p.id}"]`); if(o) o.textContent = t.value || "Person";
+    return;
+  }
+  if(t.dataset.ik){
+    const own = ownerOf(t), row = t.closest("[data-iid]"); if(!own || !row) return;
+    const it = own.items.find(i => i.id === row.dataset.iid); if(!it) return;
+    it[t.dataset.ik] = t.value; saveSoon(); updateBudgetNumbers();
+  }
+}
+bTab.addEventListener("input", onBudgetInput);
+bTab.addEventListener("change", onBudgetInput);
+bTab.addEventListener("click", e => {
+  const B = S.budget, t = e.target;
+  if(t.closest("[data-add-person]")){
+    B.persons.push({id:uid(), name:"", items:[]}); save(); renderBudget();
+    const cards = $$("#bPersons [data-pid]"), last = cards[cards.length - 1];
+    if(last){ last.scrollIntoView({behavior:"smooth", block:"start"}); $("[data-pk]", last).focus({preventScroll:true}); }
+    return;
+  }
+  const add = t.closest("[data-add]");
+  if(add){
+    const own = ownerOf(add); if(!own) return;
+    const it = {id:uid(), type:add.dataset.add, name:"", amount:"", period:"month", scope:"split"};
+    own.items.push(it); save(); renderBudget();
+    const inp = $(`[data-iid="${it.id}"] [data-ik=name]`); if(inp) inp.focus();
+    return;
+  }
+  const del = t.closest("[data-del-item]");
+  if(del){
+    const own = ownerOf(del), row = del.closest("[data-iid]"); if(!own || !row) return;
+    const i = own.items.findIndex(x => x.id === row.dataset.iid); if(i >= 0) own.items.splice(i, 1);
+    save(); renderBudget(); return;
+  }
+  const dp = t.closest("[data-del-person]");
+  if(dp){
+    const p = ownerOf(dp); if(!p) return;
+    if(!confirm(`Profil „${p.name || "ohne Namen"}“ mit allen Einträgen löschen?`)) return;
+    B.persons = B.persons.filter(x => x !== p); save(); renderBudget(); toast("Profil gelöscht");
+  }
+});
+
 /* ---------- boot ---------- */
 function renderAll(){
   $("#loanTitle").textContent = S.params?.name || "Hauskredit";
-  renderOverview(); renderOutputChoices(); renderSpecialTab(); renderJournal(); setSaveState();
+  renderOverview(); renderOutputChoices(); renderSpecialTab(); renderJournal(); renderBudget(); setSaveState();
 }
 loadLocal();
+if(!S.budget) S.budget = normBudget();
 renderAll();
 
 /* ---------- PWA ---------- */

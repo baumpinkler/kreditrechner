@@ -2,7 +2,7 @@
 
 > **So nutzt du diese Datei:** In einem neuen Chat diese `CONTEXT.md` und die aktuelle `index.html` hochladen und dazuschreiben, was du ändern möchtest. Nach jeder größeren Änderung diese Datei mit aktualisieren lassen.
 
-Stand: Oktober 2026 · App-Version 1.0.2 · Service-Worker-Cache `hauskredit-1.0.2`
+Stand: Oktober 2026 · App-Version 1.1.0 · Service-Worker-Cache `hauskredit-1.1.0`
 
 ---
 
@@ -13,6 +13,7 @@ Eine persönliche Web-App für einen österreichischen Wohnbaukredit. Sie hat dr
 1. Sie zeigt die Eckdaten des Kredits auf einen Blick: Restschuld, Rate, Zinsen, Fixzinsende und Laufzeit.
 2. Sie berechnet Sondertilgungen: neue Rate, neue Laufzeit, Zinsersparnis und Gebühr. Dabei lassen sich mehrere Sondertilgungen mit jeweils eigener Wirkung kombinieren.
 3. Sie dokumentiert die Restschuld Monat für Monat in einem Journal.
+4. Sie führt ein Budget mit Personenprofilen und gemeinsamen Posten und prüft, ob sich Sondertilgungen aus dem Überschuss finanzieren lassen.
 
 Die App läuft komplett im Browser und funktioniert offline. Gehostet wird sie auf GitHub Pages und am Handy als PWA installiert. Die Daten bleiben ausschließlich auf dem Gerät, einen Server oder Account gibt es nicht.
 
@@ -30,7 +31,9 @@ hauskredit-pwa/
 └── .nojekyll
 ```
 
-## Bedienoberfläche (4 Reiter)
+## Bedienoberfläche (5 Reiter)
+
+Am Computer stehen die Reiter oben rechts. Am Handy (≤ 600 px) gibt es stattdessen eine App-Leiste unten mit Icons (Inline-SVG), Labels dort: Übersicht, Sondertilgung, Journal, Budget, Kredit.
 
 **Übersicht.** Oben steht die Restschuld laut Plan heute als große Zahl. Darunter zeigt eine Zeitleiste Beginn, „Heute“, Fixzinsende (schraffiert) und Ende. Es folgen die Kennzahlen:
 - Rate und aktueller Zins
@@ -70,6 +73,13 @@ Das Ergebnis ist eine Vergleichstabelle mit „Ohne Sondertilgung“ gegen die S
 
 Die Tabelle zeigt Veränderung zum Vormonat und eine Summenzeile, darüber den Verlaufsgraph und den Status des gebührenfreien Rahmens. Einträge lassen sich bearbeiten und löschen. Der neueste Eintrag kann als Ausgangswert übernommen werden.
 
+**Budget.** Umschalter „pro Monat / pro Jahr“ für alle Anzeigen. Darunter:
+- **Gesamtübersicht:** Netto-Einnahmen, Netto-Ausgaben, Überschuss, Sparquote, ein Balken (Kreditrate / sonstige Ausgaben / Überschuss) und eine Tabelle pro Person.
+- **Personen:** Je Profil ein Name sowie Listen für Netto-Einnahmen und Netto-Ausgaben. Jeder Posten hat Bezeichnung, Betrag und Rhythmus (monatlich oder jährlich). Die Kurzübersicht pro Person enthält ihren Anteil an den gemeinsamen Posten.
+- **Gemeinsam für alle:** Posten mit Verteilung „gemeinsam, aufgeteilt“ (wird auf die Personen verteilt) oder „für jede Person“ (zählt pro Kopf voll). Aufteilung zu gleichen Teilen oder nach Einkommen (Anteil am eigenen Netto-Einkommen). Option: aktuelle Kreditrate automatisch als gemeinsame Ausgabe.
+- **Sondertilgung finanzieren:** Betrag, Zieldatum, bereits gespart, wer spart (alle oder eine Person), Anteil vom Überschuss in %. Ergebnis: nötige Sparrate pro Jahr/Monat/Woche/Tag, ob sie sich ausgeht, sonst Fehlbetrag pro Monat und frühestmögliches Datum.
+- **Dein Sondertilgungs-Plan:** Prüft den Plan aus dem Reiter Sondertilgung Monat für Monat (siehe Rechenlogik Budget). Das Ergebnis erscheint auch kurz unter den Sondertilgungs-Ergebnissen, und die Übersicht zeigt den monatlichen Überschuss.
+
 **Kreditdaten.** Das Formular für alle Parameter, dazu „Beispielwerte einsetzen“. Darunter liegt der Bereich Sicherung: JSON-Export und -Import sowie das Journal als CSV (Semikolon, Dezimalkomma, BOM). Die Versionsanzeige steht ebenfalls hier.
 
 ## Datenmodell
@@ -97,9 +107,19 @@ Gespeichert in `localStorage` unter dem Key **`hauskredit-v1`**. Eine Sicherungs
   plan:    [ { id, amount, date, repeat: "once"|"yearly", count, mode: "rate"|"laufzeit" } ], // Rohwerte als Strings
   outputs: { rate, end, savings, fee, fix, chart, years, plan },  // Checkbox-Auswahl
   cmpUniform: bool,
+  budget: {
+    persons: [ { id, name, items: [Posten] } ],
+    shared:  [Posten],                 // gemeinsame Posten
+    split: "equal" | "income",
+    autoRate: bool,                    // Kreditrate als gemeinsame Ausgabe
+    view: "month" | "year",
+    fin: { amount, date, saved, who: "all" | personId, share }   // Formular „Sondertilgung finanzieren“ (Strings)
+  },
   updated: ISO-Datum
 }
 ```
+
+Posten: `{ id, type: "in"|"out", name, amount (String), period: "month"|"year", scope: "split"|"each" }` (`scope` nur bei gemeinsamen Posten relevant). Alte Sicherungen ohne `budget` werden über `normBudget` ergänzt.
 
 Monate werden intern als Index gerechnet: `idx = Jahr*12 + Monat-1`. Hilfsfunktionen dafür sind `ymToIdx` und `idxToYm`.
 
@@ -128,6 +148,17 @@ Monate werden intern als Index gerechnet: `idx = Jahr*12 + Monat-1`. Hilfsfunkti
 - **Berechnung.** `plannedFees` geht die geplanten Zahlungen chronologisch durch und berücksichtigt dabei Journal und bereits geplante Zahlungen. Die Gebühr fällt nur auf den Teil über dem Freibetrag an.
   - Beispiel: 34.700 € frei, 1 %, Zahlung von 36.000 € → 13 € Gebühr.
 - **Ausgabe in der Vergleichstabelle.** „Davon gebührenfrei“, „Gebühr“ und „Ersparnis nach Gebühr“.
+
+## Rechenlogik Budget
+
+- Alles wird intern **pro Monat** gerechnet (Jahresposten ÷ 12). Die Jahresansicht multipliziert nur mit 12.
+- `budgetCalc(kreditrate)`:
+  - Anteil einer Person: bei „gleich“ 1/n, bei „nach Einkommen“ eigenes Netto-Einkommen ÷ Summe (ohne Einkommen fallweise gleich).
+  - Person: eigene Posten + Anteil an „gemeinsam, aufgeteilt“ (inkl. Kreditrate) + volle „für jede Person“-Posten.
+  - Gesamt: alle eigenen Posten + gemeinsam aufgeteilt (einmal) + „für jede Person“ × Anzahl Personen.
+- Kreditrate: aus `simulate` für den jeweiligen Monat (`loanRateAt`), nach Ende 0.
+- **Sparziel:** Tage bis zum Datum; pro Tag = fehlender Betrag ÷ Tage; Woche × 7, Monat × 30,44, Jahr × 365,25. Verglichen mit Überschuss × Anteil.
+- **Plan prüfen** (`planFinanceCalc`): Start mit „bereits gespart“ im aktuellen Monat. Jeden Monat werden zuerst die fälligen Sondertilgungen samt Gebühr abgezogen, danach der Überschuss dieses Monats gutgeschrieben (positiver Überschuss × Anteil, ein Defizit voll). Die Kreditrate folgt dabei dem simulierten Plan, d. h. „Rate senken“ erhöht den Überschuss. Erster Fehlbetrag wird gemeldet.
 
 ## Gestaltung
 
@@ -167,10 +198,13 @@ Monate werden intern als Index gerechnet: `idx = Jahr*12 + Monat-1`. Hilfsfunkti
 6. Umbau zur PWA für GitHub Pages: Manifest, Service Worker, Icons, lokale Schriften.
 7. Eigene App-Icons aus Nutzer-Grafik (Version 1.0.1). Manifest-`background_color` auf `#000000` passend zum Icon.
 8. Icons erschienen auf Android nicht → Dateinamen mit `-v2` versioniert, Manifest wird frisch geladen (Version 1.0.2).
+   Das GitHub-Repository heißt **kreditrechner**: https://baumpinkler.github.io/kreditrechner/
+9. Budget mit Personenprofilen, gemeinsamen Posten, Sparziel-Rechner und Finanzierungsprüfung des Sondertilgungs-Plans. App-Leiste unten am Handy (Version 1.1.0).
 
 ## Ideen für später (noch nicht umgesetzt)
 
 - Soll/Ist-Vergleich: Journal-Restschuld gegen berechneten Plan.
+- Budget: Einmalige Ausgaben/Einnahmen mit Datum (z. B. Urlaub, Bonus) in der Finanzierungsprüfung.
 - Szenarien speichern und benennen, um mehrere Pläne nebeneinander zu haben.
 - Zinsszenarien nach dem Fixzinsende, z. B. 3 % / 4 % / 5 % im Vergleich.
 - Sondertilgung als Prozent vom Freibetrag bzw. „Freibetrag voll ausnutzen“ als Ein-Klick-Option.
